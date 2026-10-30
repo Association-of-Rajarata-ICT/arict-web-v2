@@ -47,8 +47,8 @@ export async function POST(request: Request) {
           cacheControlMaxAge: 60 * 60 * 24 * 365,
         };
       },
-      // Uploads are referenced by the form that triggered them; nothing to do here.
-      onUploadCompleted: async () => {},
+      // No onUploadCompleted callback: the form that triggered the upload stores the URL,
+      // and omitting it lets uploads work from localhost (Vercel can't call back to it).
     });
     return NextResponse.json(result);
   } catch (error) {

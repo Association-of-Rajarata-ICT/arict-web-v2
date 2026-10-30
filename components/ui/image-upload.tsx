@@ -2,6 +2,7 @@
 
 import { useId, useRef, useState } from "react";
 import { ImagePlus, Loader2, X } from "lucide-react";
+import { prepareImage } from "@/lib/image-compress";
 import { uploadImage } from "@/lib/upload-client";
 import { IMAGE_ACCEPT, validateImageFile, type UploadScope } from "@/lib/uploads";
 import { cn } from "@/lib/utils";
@@ -52,30 +53,36 @@ export function ImageUpload({
     const picked = Array.from(files).slice(0, Math.max(remaining, 0));
     if (files.length > picked.length) setMessage(`You can add up to ${max} image${max === 1 ? "" : "s"}.`);
 
-    const queued: { item: Item; file: File }[] = [];
-    for (const file of picked) {
-      const invalid = validateImageFile(file);
-      if (invalid) {
-        setMessage(invalid);
-        continue;
-      }
-      queued.push({ item: { key: crypto.randomUUID(), preview: URL.createObjectURL(file), status: "uploading" }, file });
-    }
-    if (!queued.length) return;
-    setItems((prev) => (max === 1 ? queued.slice(0, 1).map((q) => q.item) : [...prev, ...queued.map((q) => q.item)]));
-    onBusyChange?.(true);
-    await Promise.all(
-      queued.map(async ({ item, file }) => {
-        try {
-          const url = await uploadImage(file, scope);
-          update(item.key, { url, status: "done" });
-        } catch (err) {
-          update(item.key, { status: "error", error: err instanceof Error ? err.message : "Upload failed." });
-        }
-      }),
-    );
-    onBusyChange?.(false);
+    // Reset the picker right away so choosing the same file again still triggers a change.
     if (inputRef.current) inputRef.current.value = "";
+    onBusyChange?.(true);
+    try {
+      const queued: { item: Item; file: File }[] = [];
+      for (const original of picked) {
+        // Large phone/camera photos are resized in the browser to fit the 4 MB limit.
+        const file = await prepareImage(original);
+        const invalid = validateImageFile(file);
+        if (invalid) {
+          setMessage(`${original.name}: ${invalid}`);
+          continue;
+        }
+        queued.push({ item: { key: crypto.randomUUID(), preview: URL.createObjectURL(file), status: "uploading" }, file });
+      }
+      if (!queued.length) return;
+      setItems((prev) => (max === 1 ? queued.slice(0, 1).map((q) => q.item) : [...prev, ...queued.map((q) => q.item)]));
+      await Promise.all(
+        queued.map(async ({ item, file }) => {
+          try {
+            const url = await uploadImage(file, scope);
+            update(item.key, { url, status: "done" });
+          } catch (err) {
+            update(item.key, { status: "error", error: err instanceof Error ? err.message : "Upload failed." });
+          }
+        }),
+      );
+    } finally {
+      onBusyChange?.(false);
+    }
   }
 
   const remove = (key: string) => setItems((prev) => prev.filter((it) => it.key !== key));
