@@ -235,7 +235,7 @@ Git repository → Vercel project → Neon Postgres → environment variables �
 2. In Vercel: **Add New → Project** and import the repository. The framework preset is Next.js; the build command comes from `vercel.json`.
 3. **Storage → Create Database → Neon (Postgres)** and connect it to the project. This sets `DATABASE_URL` and `DATABASE_URL_UNPOOLED`. Choose the **Singapore (ap-southeast-1)** region; `vercel.json` pins functions to `sin1` next to it.
 4. **Storage → Create → Blob** and connect it to the project. This sets `BLOB_READ_WRITE_TOKEN`.
-5. Under **Settings → Environment Variables**, add `AUTH_SECRET`, `NEXT_PUBLIC_SITE_URL=https://arict.lk` and the three `NEXT_PUBLIC_EMAILJS_*` values.
+5. Under **Settings → Environment Variables**, add `AUTH_SECRET`, `NEXT_PUBLIC_SITE_URL=https://arict.lk` and the three `NEXT_PUBLIC_EMAILJS_*` values. **Do not** add `NEXT_PUBLIC_UPLOAD_MODE` or the `SEED_ADMIN_*` values; they are for local use only.
 6. Deploy. Migrations run automatically before the build.
 7. Create the first admin from your machine using the production `DATABASE_URL`:
    ```bash
