@@ -20,7 +20,7 @@ export function ProjectCard({
   return (
     <article
       className={cn(
-        "group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white transition-[box-shadow,transform,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-black/10 hover:shadow-[0_24px_50px_-28px_rgb(0_0_0/0.35)]",
+        "group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-surface transition-[box-shadow,transform,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-black/10 hover:shadow-[0_24px_50px_-28px_rgb(0_0_0/0.35)]",
         className,
       )}
     >

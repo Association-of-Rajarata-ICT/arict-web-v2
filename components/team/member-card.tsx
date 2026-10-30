@@ -54,7 +54,7 @@ export function MemberCard({
 
   if (variant === "compact") {
     return (
-      <div className="flex h-full items-start gap-4 rounded-2xl border border-line bg-white p-4 transition-shadow duration-300 hover:shadow-soft">
+      <div className="flex h-full items-start gap-4 rounded-2xl border border-line bg-surface p-4 transition-shadow duration-300 hover:shadow-soft">
         <Avatar name={member.fullName} src={member.image} size={56} className="size-14 shrink-0" />
         <div className="min-w-0 flex-1">
           <Heading className="text-[15px] leading-snug font-semibold text-balance text-ink">{member.fullName}</Heading>
@@ -67,16 +67,16 @@ export function MemberCard({
 
   const large = variant === "large";
   return (
-    <div className="group flex h-full flex-col items-center rounded-3xl border border-line bg-white p-6 text-center transition-[box-shadow,transform] duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-30px_rgb(0_0_0/0.35)] sm:p-7">
+    <div className="group flex h-full flex-col items-center rounded-3xl border border-line bg-surface p-6 text-center transition-[box-shadow,transform] duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-30px_rgb(0_0_0/0.35)] sm:p-7">
       <div className="relative">
         <Avatar
           name={member.fullName}
           src={member.image}
           size={large ? 128 : 104}
-          className={cn("ring-4 ring-white shadow-soft", large ? "size-32" : "size-[104px]")}
+          className={cn("ring-4 ring-surface shadow-soft", large ? "size-32" : "size-[104px]")}
         />
         {member.position !== "committee_member" && (
-          <span aria-hidden className="absolute right-1 bottom-1 size-3 rounded-full border-2 border-white bg-brand" />
+          <span aria-hidden className="absolute right-1 bottom-1 size-3 rounded-full border-2 border-surface bg-brand" />
         )}
       </div>
       <Heading className={cn("mt-5 font-semibold tracking-tight text-ink", large ? "text-lg" : "text-base")}>{member.fullName}</Heading>

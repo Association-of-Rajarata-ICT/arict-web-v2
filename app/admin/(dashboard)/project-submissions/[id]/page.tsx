@@ -18,7 +18,7 @@ export const metadata = { title: "Review submission" };
 function SafeLink({ href }: { href: string | null }) {
   if (!href) return <span className="text-muted">—</span>;
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer nofollow ugc" className="break-all text-sky-700 underline underline-offset-2">
+    <a href={href} target="_blank" rel="noopener noreferrer nofollow ugc" className="break-all text-sky-700 dark:text-sky-400 underline underline-offset-2">
       {href}
     </a>
   );
@@ -99,7 +99,7 @@ export default async function SubmissionPage({ params }: PageProps<"/admin/proje
         <div className="space-y-6">
           <Card title="Submitter">
             <p className="font-medium">{s.submitterName}</p>
-            <a href={`mailto:${s.submitterEmail}`} className="text-sm text-sky-700 underline">
+            <a href={`mailto:${s.submitterEmail}`} className="text-sm text-sky-700 dark:text-sky-400 underline">
               {s.submitterEmail}
             </a>
           </Card>

@@ -22,7 +22,7 @@ export default async function JoinApplicationPage({ params }: PageProps<"/admin/
 
   const link = (href: string | null) =>
     href ? (
-      <a href={href} target="_blank" rel="noopener noreferrer nofollow ugc" className="break-all text-sky-700 underline">
+      <a href={href} target="_blank" rel="noopener noreferrer nofollow ugc" className="break-all text-sky-700 dark:text-sky-400 underline">
         {href}
       </a>
     ) : (
@@ -45,7 +45,7 @@ export default async function JoinApplicationPage({ params }: PageProps<"/admin/
           <Card title="Applicant">
             <dl className="grid gap-4 text-sm sm:grid-cols-2">
               <Row label="Email">
-                <a href={`mailto:${a.email}`} className="text-sky-700 underline">
+                <a href={`mailto:${a.email}`} className="text-sky-700 dark:text-sky-400 underline">
                   {a.email}
                 </a>
               </Row>

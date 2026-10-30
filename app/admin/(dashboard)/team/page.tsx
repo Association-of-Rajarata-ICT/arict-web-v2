@@ -64,11 +64,11 @@ export default async function AdminTeamPage({ searchParams }: PageProps<"/admin/
             aria-current={t.id === selected.id ? "page" : undefined}
             className={cn(
               "inline-flex h-9 items-center gap-2 rounded-full border px-4 text-sm font-medium",
-              t.id === selected.id ? "border-ink bg-ink text-white" : "border-line bg-white hover:bg-mist",
+              t.id === selected.id ? "border-ink bg-ink text-paper" : "border-line bg-surface hover:bg-mist",
             )}
           >
             {t.title}
-            {t.isCurrent && <span className={cn("size-1.5 rounded-full", t.id === selected.id ? "bg-white" : "bg-brand")} aria-label="current" />}
+            {t.isCurrent && <span className={cn("size-1.5 rounded-full", t.id === selected.id ? "bg-surface" : "bg-brand")} aria-label="current" />}
           </Link>
         ))}
       </nav>
@@ -86,7 +86,7 @@ export default async function AdminTeamPage({ searchParams }: PageProps<"/admin/
                       {m.fullName}
                     </Link>
                   ) : (
-                    <span className="text-xs font-medium text-amber-700">Vacant</span>
+                    <span className="text-xs font-medium text-amber-700 dark:text-amber-400">Vacant</span>
                   )}
                 </li>
               );
@@ -101,7 +101,7 @@ export default async function AdminTeamPage({ searchParams }: PageProps<"/admin/
                 <li key={y}>
                   <div className="flex justify-between text-sm">
                     <span>{ACADEMIC_YEAR_LABELS[y]}</span>
-                    <span className={cn("font-medium tabular-nums", n >= COMMITTEE_LIMIT_PER_YEAR && "text-emerald-700")}>
+                    <span className={cn("font-medium tabular-nums", n >= COMMITTEE_LIMIT_PER_YEAR && "text-emerald-700 dark:text-emerald-400")}>
                       {n}/{COMMITTEE_LIMIT_PER_YEAR}
                     </span>
                   </div>

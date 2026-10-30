@@ -44,7 +44,8 @@ async function trimmedLogo() {
   const wordmark = await sharp(region).trim({ threshold: 10 }).png().toBuffer();
   await sharp(wordmark).toFile(pub("brand/arict-wordmark.png"));
 
-  // Dark-background variants: turn the black glyphs white, keep the red.
+  // Dark-background variants: turn the black glyphs white and lift the maroon to a
+  // brighter brand red (#E5484D) so "ICT" stays legible on dark surfaces.
   for (const [input, out] of [
     [full, "brand/arict-logo-light.png"],
     [wordmark, "brand/arict-wordmark-light.png"],
@@ -59,6 +60,14 @@ async function trimmedLogo() {
         data[i + 3] = Math.min(data[i + 3], lift);
       } else if (r > 200 && g > 200 && b > 200) {
         data[i + 3] = 0; // drop white background
+      } else if (r > g + 40 && r > b + 40) {
+        // Maroon glyph pixel; anti-aliased edges blend toward white in the source,
+        // so map "how red" it is to alpha and paint it the brighter red.
+        const strength = Math.min(1, (r - Math.max(g, b)) / 120);
+        data[i] = 229;
+        data[i + 1] = 72;
+        data[i + 2] = 77;
+        data[i + 3] = Math.round(data[i + 3] * strength);
       }
     }
     await sharp(data, { raw: info }).png().toFile(pub(out));

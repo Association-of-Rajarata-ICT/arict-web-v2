@@ -37,7 +37,7 @@ export default async function AdminDashboard({ searchParams }: PageProps<"/admin
           <li key={t.label}>
             <Link
               href={t.href}
-              className="group flex h-full flex-col rounded-2xl border border-line bg-white p-5 transition-shadow hover:shadow-soft"
+              className="group flex h-full flex-col rounded-2xl border border-line bg-surface p-5 transition-shadow hover:shadow-soft"
             >
               <div className="flex items-center justify-between">
                 <span className={`inline-flex size-9 items-center justify-center rounded-xl ${"highlight" in t && t.highlight ? "bg-brand-soft text-brand" : "bg-mist text-ink/70"}`}>

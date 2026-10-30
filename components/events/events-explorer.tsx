@@ -146,7 +146,7 @@ function EventGrid({ events, emptyLabel }: { events: EventCardData[]; emptyLabel
 
 function FeaturedEvent({ event }: { event: EventCardData }) {
   return (
-    <article className="group relative mt-5 grid overflow-hidden rounded-[2rem] border border-line bg-white lg:grid-cols-2">
+    <article className="group relative mt-5 grid overflow-hidden rounded-[2rem] border border-line bg-surface lg:grid-cols-2">
       <div className="relative aspect-[16/10] overflow-hidden bg-mist lg:aspect-auto lg:min-h-[380px]">
         {event.coverImage ? (
           <Image

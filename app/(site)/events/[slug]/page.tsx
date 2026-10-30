@@ -64,7 +64,7 @@ async function EventDetail({ params }: Pick<PageProps<"/events/[slug]">, "params
     <>
       <JsonLd data={eventJsonLd(event)} />
       <article>
-        <header className="bg-gradient-to-b from-mist to-white pt-32 pb-12 sm:pt-36">
+        <header className="bg-gradient-to-b from-mist to-paper pt-32 pb-12 sm:pt-36">
           <div className="container-page">
             <Breadcrumbs
               items={[
@@ -125,7 +125,7 @@ async function EventDetail({ params }: Pick<PageProps<"/events/[slug]">, "params
           </div>
 
           <aside className="lg:col-span-4">
-            <div className="sticky top-28 rounded-3xl border border-line bg-white p-6 shadow-soft">
+            <div className="sticky top-28 rounded-3xl border border-line bg-surface p-6 shadow-soft">
               <h2 className="text-sm font-semibold tracking-[0.14em] text-muted uppercase">Event details</h2>
               <dl className="mt-5 space-y-4 text-sm">
                 <Detail icon={<CalendarDays className="size-4" />} label="Date" value={formatDateRange(event.startDate, event.endDate)} />

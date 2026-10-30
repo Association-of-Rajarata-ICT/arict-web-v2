@@ -49,9 +49,9 @@ export function Pill({ children, className, tone = "neutral" }: { children: Reac
   const tones = {
     neutral: "bg-mist text-ink/80 border-line",
     brand: "bg-brand-soft text-brand border-brand/15",
-    dark: "bg-ink text-white border-ink",
-    success: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    warning: "bg-amber-50 text-amber-800 border-amber-200",
+    dark: "bg-ink text-paper border-ink",
+    success: "bg-emerald-50 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/25 text-emerald-700 dark:text-emerald-400 border-emerald-200",
+    warning: "bg-amber-50 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/25 text-amber-800 border-amber-200",
   } as const;
   return (
     <span className={cn("inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium", tones[tone], className)}>
@@ -117,10 +117,10 @@ export function PageHero({
   children?: ReactNode;
 }) {
   return (
-    <section className="relative overflow-hidden border-b border-line bg-gradient-to-b from-mist to-white pt-36 pb-14 sm:pt-40 sm:pb-20">
+    <section className="relative overflow-hidden border-b border-line bg-gradient-to-b from-mist to-paper pt-36 pb-14 sm:pt-40 sm:pb-20">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.35] [background-image:radial-gradient(circle_at_1px_1px,rgb(0_0_0/0.12)_1px,transparent_0)] [background-size:22px_22px] [mask-image:linear-gradient(to_bottom,black,transparent_85%)]"
+        className="pointer-events-none absolute inset-0 opacity-[0.35] [background-image:radial-gradient(circle_at_1px_1px,rgb(0_0_0/0.12)_1px,transparent_0)] dark:[background-image:radial-gradient(circle_at_1px_1px,rgb(255_255_255/0.07)_1px,transparent_0)] [background-size:22px_22px] [mask-image:linear-gradient(to_bottom,black,transparent_85%)]"
       />
       <div className="container-page relative">
         {crumbs && (

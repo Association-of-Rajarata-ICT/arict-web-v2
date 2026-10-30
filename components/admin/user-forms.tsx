@@ -49,11 +49,11 @@ export function ResetPasswordForm({ id }: { id: string }) {
       <input type="hidden" name="id" value={id} />
       <div className="flex gap-1.5">
         <input name="password" type="password" autoComplete="new-password" minLength={10} required placeholder="New password" aria-label="New password" className="h-8 w-36 rounded-lg border border-line px-2 text-xs" />
-        <button type="submit" disabled={pending} className="h-8 rounded-lg bg-ink px-3 text-xs font-medium text-white disabled:opacity-60">
+        <button type="submit" disabled={pending} className="h-8 rounded-lg bg-ink px-3 text-xs font-medium text-paper disabled:opacity-60">
           Save
         </button>
       </div>
-      {state.message && <span className={`text-xs ${state.ok ? "text-emerald-700" : "text-red-600"}`}>{state.message}</span>}
+      {state.message && <span className={`text-xs ${state.ok ? "text-emerald-700 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>{state.message}</span>}
     </form>
   );
 }

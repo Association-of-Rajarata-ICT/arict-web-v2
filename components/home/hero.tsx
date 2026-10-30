@@ -56,10 +56,10 @@ export function Hero({ hero }: { hero: SiteSettings["hero"] }) {
       {/* Subtle readability: a soft haze behind the copy, not a dark overlay */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_70%_52%_at_50%_40%,rgb(255_255_255/0.78),rgb(255_255_255/0.35)_55%,transparent_80%)]"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_70%_52%_at_50%_40%,rgb(255_255_255/0.78),rgb(255_255_255/0.35)_55%,transparent_80%)] dark:bg-[radial-gradient(ellipse_75%_58%_at_50%_42%,rgb(0_0_0/0.62),rgb(0_0_0/0.38)_55%,rgb(0_0_0/0.18)_85%)]"
       />
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-white/45 to-transparent" />
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-48 bg-gradient-to-t from-black/25 to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-white/45 to-transparent dark:from-black/55" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-48 bg-gradient-to-t from-black/25 to-transparent dark:from-paper" />
 
       <motion.div
         className="container-page flex flex-1 flex-col items-center justify-center pt-36 pb-28 text-center sm:pt-52 sm:pb-24"
@@ -68,7 +68,7 @@ export function Hero({ hero }: { hero: SiteSettings["hero"] }) {
         {hero.badge && (
           <motion.p
             {...fadeUp(0.35)}
-            className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-black/[0.06] bg-white/80 px-3.5 py-1.5 text-[11px] leading-snug font-medium text-ink/80 shadow-[0_4px_16px_-8px_rgb(0_0_0/0.25)] backdrop-blur-md sm:mb-7 sm:text-xs"
+            className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-black/[0.06] bg-surface/80 px-3.5 py-1.5 text-[11px] leading-snug font-medium text-ink/80 shadow-[0_4px_16px_-8px_rgb(0_0_0/0.25)] backdrop-blur-md sm:mb-7 sm:text-xs"
           >
             <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-brand" />
             <span className="text-balance">{hero.badge}</span>
@@ -103,7 +103,7 @@ export function Hero({ hero }: { hero: SiteSettings["hero"] }) {
 
         <motion.p
           {...fadeUp(1.05)}
-          className="mt-6 max-w-xl text-base leading-relaxed text-pretty text-ink/80 [text-shadow:0_1px_14px_rgb(255_255_255/0.9)] sm:text-lg"
+          className="mt-6 max-w-xl text-base leading-relaxed text-pretty text-ink/80 [text-shadow:0_1px_14px_rgb(255_255_255/0.9)] sm:text-lg dark:[text-shadow:0_1px_14px_rgb(0_0_0/0.8)]"
         >
           {hero.text}
         </motion.p>
@@ -117,7 +117,7 @@ export function Hero({ hero }: { hero: SiteSettings["hero"] }) {
           <motion.div variants={{ hidden: { opacity: 0, y: reduce ? 0 : 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } } }}>
             <Link
               href={hero.primaryCtaHref || "/events"}
-              className="group inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 text-[15px] font-medium text-ink shadow-[0_10px_30px_-10px_rgb(0_0_0/0.35)] ring-1 ring-black/5 transition-shadow duration-200 hover:shadow-[0_16px_40px_-12px_rgb(0_0_0/0.45)]"
+              className="group inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 text-[15px] font-medium text-night shadow-[0_10px_30px_-10px_rgb(0_0_0/0.35)] ring-1 ring-black/5 transition-shadow duration-200 hover:shadow-[0_16px_40px_-12px_rgb(0_0_0/0.45)]"
             >
               {hero.primaryCtaLabel}
               <ArrowRight aria-hidden className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
@@ -128,7 +128,7 @@ export function Hero({ hero }: { hero: SiteSettings["hero"] }) {
               <VideoDialog
                 url={hero.videoUrl}
                 label={hero.secondaryCtaLabel}
-                className="group inline-flex h-12 items-center gap-3 rounded-full px-3 pr-5 text-[15px] font-medium text-ink transition-colors hover:bg-white/50"
+                className="group inline-flex h-12 items-center gap-3 rounded-full px-3 pr-5 text-[15px] font-medium text-ink transition-colors hover:bg-white/50 dark:hover:bg-white/10"
               />
             </motion.div>
           )}

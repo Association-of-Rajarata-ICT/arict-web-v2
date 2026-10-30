@@ -39,10 +39,10 @@ function Band({ data, onJoinPage }: { data: Cta; onJoinPage: boolean }) {
         </div>
         <Link
           href={href}
-          className="group inline-flex h-12 shrink-0 items-center gap-5 self-start rounded-full bg-white pr-1.5 pl-6 text-[15px] font-medium text-ink transition-shadow duration-300 hover:shadow-[0_0_0_6px_rgb(255_255_255/0.1)] md:self-auto"
+          className="group inline-flex h-12 shrink-0 items-center gap-5 self-start rounded-full bg-white pr-1.5 pl-6 text-[15px] font-medium text-night transition-shadow duration-300 hover:shadow-[0_0_0_6px_rgb(255_255_255/0.1)] md:self-auto"
         >
           {label}
-          <span className="inline-flex size-9 items-center justify-center rounded-full bg-ink text-white transition-transform duration-300 group-hover:rotate-45">
+          <span className="inline-flex size-9 items-center justify-center rounded-full bg-night text-white transition-transform duration-300 group-hover:rotate-45">
             <ArrowUpRight aria-hidden className="size-4" />
           </span>
         </Link>

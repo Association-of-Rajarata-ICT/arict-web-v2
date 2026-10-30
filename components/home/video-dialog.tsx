@@ -92,7 +92,7 @@ export function VideoDialog({ url, label, className }: { url: string; label: str
 
 function PlayBadge() {
   return (
-    <span className={cn("inline-flex size-8 items-center justify-center rounded-full bg-ink/90 text-white transition-transform duration-200 group-hover:scale-105")}>
+    <span className={cn("inline-flex size-8 items-center justify-center rounded-full bg-night/90 text-white transition-transform duration-200 group-hover:scale-105")}>
       <Play aria-hidden className="ml-0.5 size-3.5 fill-current" />
     </span>
   );

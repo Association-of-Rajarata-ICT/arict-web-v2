@@ -44,9 +44,9 @@ export function ActionButton({
   };
 
   const tones = {
-    default: "border-line bg-white text-ink hover:bg-mist",
-    danger: "border-red-200 bg-white text-red-700 hover:bg-red-50",
-    primary: "border-ink bg-ink text-white hover:bg-ink-soft",
+    default: "border-line bg-surface text-ink hover:bg-mist",
+    danger: "border-red-200 bg-surface text-red-700 dark:text-red-400 hover:bg-red-50 dark:text-red-400 dark:border-red-500/30 dark:hover:bg-red-500/10",
+    primary: "border-ink bg-ink text-paper hover:bg-ink-soft",
   };
 
   return (
@@ -66,7 +66,7 @@ export function ActionButton({
         {children}
       </button>
       {error && (
-        <span role="alert" className="mt-1 max-w-56 text-xs text-red-600">
+        <span role="alert" className="mt-1 max-w-56 text-xs text-red-600 dark:text-red-400">
           {error}
         </span>
       )}

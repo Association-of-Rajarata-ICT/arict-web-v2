@@ -108,7 +108,7 @@ export function ImageUpload({
             <button
               type="button"
               onClick={() => remove(item.key)}
-              className="absolute top-2 right-2 inline-flex size-8 items-center justify-center rounded-full bg-white/90 text-ink shadow-soft hover:bg-white"
+              className="absolute top-2 right-2 inline-flex size-8 items-center justify-center rounded-full bg-surface/90 text-ink shadow-soft hover:bg-surface"
               aria-label="Remove image"
             >
               <X className="size-4" />
@@ -121,7 +121,7 @@ export function ImageUpload({
             onClick={() => inputRef.current?.click()}
             aria-describedby={`${id}-hint`}
             className={cn(
-              "flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-line bg-white px-4 text-center text-sm text-muted transition-colors hover:border-ink/30 hover:bg-mist",
+              "flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-line bg-surface px-4 text-center text-sm text-muted transition-colors hover:border-ink/30 hover:bg-mist",
               aspect,
               shownError && "border-red-300",
             )}
@@ -148,7 +148,7 @@ export function ImageUpload({
         </p>
       )}
       {shownError && (
-        <p role="alert" className="text-xs font-medium text-red-600">
+        <p role="alert" className="text-xs font-medium text-red-600 dark:text-red-400">
           {shownError}
         </p>
       )}

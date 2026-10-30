@@ -36,7 +36,7 @@ export async function Footer() {
   const socials = (Object.keys(SOCIAL_ICONS) as (keyof typeof SOCIAL_ICONS)[]).filter((k) => social[k]);
 
   return (
-    <footer className="relative mt-auto overflow-hidden bg-ink text-white">
+    <footer className="relative mt-auto overflow-hidden border-t border-transparent bg-night text-white dark:border-white/10">
       {/* Faint wordmark in the background; adds no height. */}
       <span
         aria-hidden

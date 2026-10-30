@@ -52,7 +52,7 @@ function NavList({ allowed, pathname, onNavigate }: { allowed: NavKey[]; pathnam
               aria-current={active ? "page" : undefined}
               className={cn(
                 "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-                active ? "bg-ink text-white" : "text-ink/70 hover:bg-mist hover:text-ink",
+                active ? "bg-ink text-paper" : "text-ink/70 hover:bg-mist hover:text-ink",
               )}
             >
               <Icon aria-hidden className="size-4" />
@@ -92,7 +92,7 @@ export function MobileAdminNav({ allowed }: { allowed: NavKey[] }) {
         {open ? <X className="size-5" /> : <Menu className="size-5" />}
       </button>
       {open && (
-        <nav id="admin-mobile-nav" aria-label="Admin" className="absolute inset-x-0 top-full z-40 border-b border-line bg-white p-3 shadow-soft">
+        <nav id="admin-mobile-nav" aria-label="Admin" className="absolute inset-x-0 top-full z-40 border-b border-line bg-surface p-3 shadow-soft">
           <Suspense fallback={<NavList allowed={allowed} pathname={null} />}>
             <WithPath allowed={allowed} onNavigate={() => setOpen(false)} />
           </Suspense>

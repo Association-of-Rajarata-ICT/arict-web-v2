@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const control =
-  "w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-ink placeholder:text-muted/70 shadow-[0_1px_0_rgb(0_0_0/0.02)] transition-[border-color,box-shadow] duration-150 outline-none focus:border-ink/40 focus:ring-4 focus:ring-ink/5 disabled:cursor-not-allowed disabled:bg-mist aria-[invalid=true]:border-red-400 aria-[invalid=true]:focus:ring-red-100";
+  "w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-ink placeholder:text-muted/70 shadow-[0_1px_0_rgb(0_0_0/0.02)] transition-[border-color,box-shadow] duration-150 outline-none focus:border-ink/40 focus:ring-4 focus:ring-ink/5 disabled:cursor-not-allowed disabled:bg-mist aria-[invalid=true]:border-red-400 aria-[invalid=true]:focus:ring-red-100";
 
 export function Field({
   label,
@@ -41,7 +41,7 @@ export function Field({
         </p>
       )}
       {error && (
-        <p id={`${name}-error`} role="alert" className="text-xs font-medium text-red-600">
+        <p id={`${name}-error`} role="alert" className="text-xs font-medium text-red-600 dark:text-red-400">
           {error}
         </p>
       )}
@@ -117,8 +117,8 @@ export function Honeypot() {
 
 export function FormMessage({ tone, children }: { tone: "success" | "error" | "info"; children: ReactNode }) {
   const tones = {
-    success: "border-emerald-200 bg-emerald-50 text-emerald-800",
-    error: "border-red-200 bg-red-50 text-red-700",
+    success: "border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/25 text-emerald-800",
+    error: "border-red-200 bg-red-50 dark:bg-red-500/10 dark:text-red-300 dark:border-red-500/25 text-red-700 dark:text-red-400",
     info: "border-line bg-mist text-ink/80",
   };
   return (

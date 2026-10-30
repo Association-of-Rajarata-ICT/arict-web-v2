@@ -8,6 +8,7 @@ import { ArrowRight, Menu, X } from "lucide-react";
 import { PRIMARY_NAV } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { useLenis } from "@/components/motion/smooth-scroll-provider";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "./logo";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -69,8 +70,8 @@ function NavbarInner({ pathname }: { pathname: string | null }) {
         className={cn(
           "mx-auto flex max-w-[52rem] items-center justify-between gap-2 rounded-full border pl-4 pr-1.5 transition-[background-color,box-shadow,border-color,padding,max-width] duration-300 ease-out sm:pl-5",
           scrolled
-            ? "max-w-[50rem] border-black/[0.07] bg-white/90 py-1.5 shadow-[0_10px_30px_-12px_rgb(0_0_0/0.25)] backdrop-blur-xl"
-            : "border-white/60 bg-white/75 py-2 shadow-[0_6px_24px_-14px_rgb(0_0_0/0.25)] backdrop-blur-md",
+            ? "max-w-[50rem] border-black/[0.07] bg-surface/90 dark:border-white/10 py-1.5 shadow-[0_10px_30px_-12px_rgb(0_0_0/0.25)] backdrop-blur-xl"
+            : "border-white/60 bg-surface/75 dark:border-white/10 py-2 shadow-[0_6px_24px_-14px_rgb(0_0_0/0.25)] backdrop-blur-md",
         )}
       >
         <Link href="/" aria-label="ARICT home" className="flex shrink-0 items-center rounded-md py-1">
@@ -105,9 +106,10 @@ function NavbarInner({ pathname }: { pathname: string | null }) {
         </ul>
 
         <div className="flex items-center gap-1">
+          <ThemeToggle />
           <Link
             href="/join"
-            className="group hidden h-9 items-center gap-1.5 rounded-full bg-ink px-4 text-[13.5px] font-medium text-white transition-colors hover:bg-ink-soft sm:inline-flex"
+            className="group hidden h-9 items-center gap-1.5 rounded-full bg-ink px-4 text-[13.5px] font-medium text-paper transition-colors hover:bg-ink-soft sm:inline-flex"
           >
             Join ARICT
             <ArrowRight aria-hidden className="size-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -115,7 +117,7 @@ function NavbarInner({ pathname }: { pathname: string | null }) {
           <button
             ref={toggleRef}
             type="button"
-            className="inline-flex size-10 items-center justify-center rounded-full text-ink transition-colors hover:bg-black/5 md:hidden"
+            className="inline-flex size-10 items-center justify-center rounded-full text-ink transition-colors hover:bg-black/5 md:hidden dark:hover:bg-white/10"
             aria-expanded={open}
             aria-controls={menuId}
             aria-label={open ? "Close menu" : "Open menu"}
@@ -141,7 +143,7 @@ function NavbarInner({ pathname }: { pathname: string | null }) {
             <motion.div
               key="panel"
               id={menuId}
-              className="mx-auto mt-2 max-w-[52rem] overflow-hidden rounded-3xl border border-black/[0.06] bg-white p-3 shadow-[0_24px_60px_-20px_rgb(0_0_0/0.35)] md:hidden"
+              className="mx-auto mt-2 max-w-[52rem] overflow-hidden rounded-3xl border border-black/[0.06] bg-surface p-3 shadow-[0_24px_60px_-20px_rgb(0_0_0/0.35)] md:hidden"
               initial={{ opacity: 0, y: -12, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.98 }}
@@ -177,7 +179,7 @@ function NavbarInner({ pathname }: { pathname: string | null }) {
               </motion.ul>
               <Link
                 href="/join"
-                className="mt-2 flex h-12 items-center justify-center gap-2 rounded-2xl bg-ink text-base font-medium text-white"
+                className="mt-2 flex h-12 items-center justify-center gap-2 rounded-2xl bg-ink text-base font-medium text-paper"
               >
                 Join ARICT <ArrowRight aria-hidden className="size-4" />
               </Link>

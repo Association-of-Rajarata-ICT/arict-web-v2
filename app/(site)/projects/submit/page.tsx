@@ -44,14 +44,14 @@ export default function SubmitProjectPage() {
             <ol className="mt-5 space-y-4">
               {STEPS.map((s, i) => (
                 <li key={s} className="flex gap-3 text-sm text-ink/80">
-                  <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-semibold text-white">{i + 1}</span>
+                  <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-semibold text-paper">{i + 1}</span>
                   {s}
                 </li>
               ))}
             </ol>
             <div className="mt-8 rounded-2xl bg-mist p-5 text-sm text-ink/75">
               <p className="flex items-center gap-2 font-medium text-ink">
-                <CheckCircle2 aria-hidden className="size-4 text-emerald-600" /> Good submissions include
+                <CheckCircle2 aria-hidden className="size-4 text-emerald-600 dark:text-emerald-400" /> Good submissions include
               </p>
               <ul className="mt-3 list-disc space-y-1 pl-5">
                 <li>A clear cover image</li>

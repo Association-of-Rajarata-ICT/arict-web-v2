@@ -26,7 +26,7 @@ export default async function EditEventPage({ params, searchParams }: PageProps<
         back={{ href: "/admin/events", label: "Events" }}
         actions={
           event.published && event.status !== "archived" ? (
-            <Link href={`/events/${event.slug}`} target="_blank" className="inline-flex h-9 items-center gap-1.5 rounded-full border border-line bg-white px-4 text-sm font-medium hover:bg-mist">
+            <Link href={`/events/${event.slug}`} target="_blank" className="inline-flex h-9 items-center gap-1.5 rounded-full border border-line bg-surface px-4 text-sm font-medium hover:bg-mist">
               View on site <ExternalLink aria-hidden className="size-3.5" />
             </Link>
           ) : undefined

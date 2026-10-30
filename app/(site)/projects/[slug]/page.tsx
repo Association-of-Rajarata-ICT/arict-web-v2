@@ -53,7 +53,7 @@ async function ProjectDetail({ params }: Pick<PageProps<"/projects/[slug]">, "pa
   return (
     <>
       <article>
-        <header className="bg-gradient-to-b from-mist to-white pt-32 pb-12 sm:pt-36">
+        <header className="bg-gradient-to-b from-mist to-paper pt-32 pb-12 sm:pt-36">
           <div className="container-page">
             <Breadcrumbs
               items={[
@@ -129,7 +129,7 @@ async function ProjectDetail({ params }: Pick<PageProps<"/projects/[slug]">, "pa
 
           <aside className="space-y-6 lg:col-span-4">
             {project.technologies.length > 0 && (
-              <section className="rounded-3xl border border-line bg-white p-6">
+              <section className="rounded-3xl border border-line bg-surface p-6">
                 <h2 className="text-sm font-semibold tracking-[0.14em] text-muted uppercase">Technologies</h2>
                 <ul className="mt-4 flex flex-wrap gap-2">
                   {project.technologies.map((t) => (
@@ -141,7 +141,7 @@ async function ProjectDetail({ params }: Pick<PageProps<"/projects/[slug]">, "pa
               </section>
             )}
             {project.members.length > 0 && (
-              <section className="rounded-3xl border border-line bg-white p-6">
+              <section className="rounded-3xl border border-line bg-surface p-6">
                 <h2 className="text-sm font-semibold tracking-[0.14em] text-muted uppercase">Contributors</h2>
                 <ul className="mt-4 space-y-3">
                   {project.members.map((m, i) => (

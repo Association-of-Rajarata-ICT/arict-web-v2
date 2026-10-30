@@ -29,7 +29,7 @@ export function PastCommittees({ terms, activeYear }: { terms: Term[]; activeYea
                   <Link
                     href={`/team/${t.year}`}
                     aria-current={active ? "page" : undefined}
-                    className={`group flex h-full flex-col rounded-3xl border bg-white p-6 transition-[box-shadow,transform,border-color] duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-30px_rgb(0_0_0/0.35)] ${active ? "border-ink" : "border-line"}`}
+                    className={`group flex h-full flex-col rounded-3xl border bg-surface p-6 transition-[box-shadow,transform,border-color] duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-30px_rgb(0_0_0/0.35)] ${active ? "border-ink" : "border-line"}`}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <span className="font-display text-4xl font-semibold tracking-[-0.04em] text-ink/90">{t.year}</span>

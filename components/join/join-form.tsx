@@ -21,8 +21,8 @@ export function JoinForm() {
 
   if (state.ok) {
     return (
-      <div role="status" className="rounded-3xl border border-line bg-white p-8 text-center shadow-soft sm:p-12">
-        <CheckCircle2 aria-hidden className="mx-auto size-12 text-emerald-600" />
+      <div role="status" className="rounded-3xl border border-line bg-surface p-8 text-center shadow-soft sm:p-12">
+        <CheckCircle2 aria-hidden className="mx-auto size-12 text-emerald-600 dark:text-emerald-400" />
         <h2 className="mt-5 text-2xl font-semibold tracking-tight">Application received</h2>
         <p className="mx-auto mt-3 max-w-md text-muted">{state.message}</p>
         <LinkButton href="/events" variant="dark" arrow className="mt-8">
@@ -33,7 +33,7 @@ export function JoinForm() {
   }
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} noValidate className="relative space-y-10 rounded-3xl border border-line bg-white p-6 shadow-soft sm:p-8">
+    <form ref={formRef} onSubmit={onSubmit} noValidate className="relative space-y-10 rounded-3xl border border-line bg-surface p-6 shadow-soft sm:p-8">
       <Honeypot />
       <input type="hidden" name="form_token" value={token} />
       {state.message && <FormMessage tone="error">{state.message}</FormMessage>}
@@ -79,7 +79,7 @@ export function JoinForm() {
           {JOIN_INTERESTS.map((interest) => (
             <label
               key={interest}
-              className="cursor-pointer rounded-full border border-line px-4 py-2 text-sm text-ink/80 transition-colors select-none has-[:checked]:border-ink has-[:checked]:bg-ink has-[:checked]:text-white has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand"
+              className="cursor-pointer rounded-full border border-line px-4 py-2 text-sm text-ink/80 transition-colors select-none has-[:checked]:border-ink has-[:checked]:bg-ink has-[:checked]:text-paper has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand"
             >
               <input type="checkbox" name="interests" value={interest} className="sr-only" />
               {interest}
@@ -87,7 +87,7 @@ export function JoinForm() {
           ))}
         </div>
         {e.interests && (
-          <p id="interests-error" role="alert" className="mt-2 text-xs font-medium text-red-600">
+          <p id="interests-error" role="alert" className="mt-2 text-xs font-medium text-red-600 dark:text-red-400">
             {e.interests}
           </p>
         )}

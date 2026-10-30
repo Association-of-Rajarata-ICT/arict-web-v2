@@ -83,8 +83,8 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail?: string }) {
 
   if (status === "success") {
     return (
-      <div role="status" className="rounded-3xl border border-line bg-white p-8 text-center shadow-soft sm:p-10">
-        <CheckCircle2 aria-hidden className="mx-auto size-12 text-emerald-600" />
+      <div role="status" className="rounded-3xl border border-line bg-surface p-8 text-center shadow-soft sm:p-10">
+        <CheckCircle2 aria-hidden className="mx-auto size-12 text-emerald-600 dark:text-emerald-400" />
         <p className="mt-5 text-lg font-semibold">Message sent</p>
         <p className="mx-auto mt-2 max-w-sm text-muted">Your message has been sent successfully. We&apos;ll get back to you soon.</p>
         <Button variant="outline" className="mt-7" onClick={() => setStatus("idle")}>
@@ -97,7 +97,7 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail?: string }) {
   const sending = status === "sending";
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} noValidate className="relative space-y-5 rounded-3xl border border-line bg-white p-6 shadow-soft sm:p-8">
+    <form ref={formRef} onSubmit={onSubmit} noValidate className="relative space-y-5 rounded-3xl border border-line bg-surface p-6 shadow-soft sm:p-8">
       <Honeypot />
       {!configured && (
         <FormMessage tone="info">

@@ -38,7 +38,7 @@ export default async function EditProjectPage({ params, searchParams }: PageProp
         back={{ href: "/admin/projects", label: "Projects" }}
         actions={
           project.published && project.status !== "archived" ? (
-            <Link href={`/projects/${project.slug}`} target="_blank" className="inline-flex h-9 items-center gap-1.5 rounded-full border border-line bg-white px-4 text-sm font-medium hover:bg-mist">
+            <Link href={`/projects/${project.slug}`} target="_blank" className="inline-flex h-9 items-center gap-1.5 rounded-full border border-line bg-surface px-4 text-sm font-medium hover:bg-mist">
               View on site <ExternalLink aria-hidden className="size-3.5" />
             </Link>
           ) : undefined

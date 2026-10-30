@@ -22,7 +22,7 @@ export function ShareActions({ url, title }: { url: string; title: string }) {
   };
 
   const btn =
-    "inline-flex size-10 items-center justify-center rounded-full border border-line bg-white text-ink/70 transition-colors hover:border-ink/20 hover:text-ink";
+    "inline-flex size-10 items-center justify-center rounded-full border border-line bg-surface text-ink/70 transition-colors hover:border-ink/20 hover:text-ink";
 
   return (
     <div className="flex items-center gap-2">
@@ -44,7 +44,7 @@ export function ShareActions({ url, title }: { url: string; title: string }) {
         </svg>
       </a>
       <button type="button" className={btn} onClick={copy} aria-label={copied ? "Link copied" : "Copy link"}>
-        {copied ? <Check className="size-4 text-emerald-600" aria-hidden /> : <Link2 className="size-4" aria-hidden />}
+        {copied ? <Check className="size-4 text-emerald-600 dark:text-emerald-400" aria-hidden /> : <Link2 className="size-4" aria-hidden />}
       </button>
       <span role="status" aria-live="polite" className="sr-only">
         {copied ? "Link copied to clipboard" : ""}

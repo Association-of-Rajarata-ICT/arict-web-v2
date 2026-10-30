@@ -25,7 +25,7 @@ export function FilterBar({
 }) {
   const active = query !== "" || filters.some((f) => f.value !== "");
   return (
-    <div className={cn("flex flex-col gap-3 rounded-3xl border border-line bg-white p-3 shadow-soft sm:flex-row sm:items-center", className)}>
+    <div className={cn("flex flex-col gap-3 rounded-3xl border border-line bg-surface p-3 shadow-soft sm:flex-row sm:items-center", className)}>
       <div className="relative flex-1">
         <Search aria-hidden className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted" />
         <label htmlFor="filter-search" className="sr-only">
@@ -51,7 +51,7 @@ export function FilterBar({
               id={`filter-${f.id}`}
               value={f.value}
               onChange={(e) => f.onChange(e.target.value)}
-              className="h-11 w-full appearance-none rounded-2xl border border-line bg-white pr-9 pl-4 text-sm text-ink outline-none focus:ring-2 focus:ring-ink/10 sm:w-auto"
+              className="h-11 w-full appearance-none rounded-2xl border border-line bg-surface pr-9 pl-4 text-sm text-ink outline-none focus:ring-2 focus:ring-ink/10 sm:w-auto"
             >
               <option value="">{f.label}</option>
               {f.options.map((o) => (

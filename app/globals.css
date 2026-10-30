@@ -1,15 +1,24 @@
 @import "tailwindcss";
 
+/* Dark mode follows the data-theme attribute set by the inline script in app/layout.tsx. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 @theme {
-  --color-ink: #0b0b0b;
+  /* Theme-aware tokens (flip in dark mode, see below) */
+  --color-ink: #0b0b0b; /* primary text, inverted buttons */
   --color-ink-soft: #1c1c1c;
   --color-brand: #a00000;
   --color-brand-dark: #7e0000;
   --color-brand-soft: #fbeeee;
-  --color-paper: #ffffff;
-  --color-mist: #f7f7f7;
+  --color-paper: #ffffff; /* page background */
+  --color-surface: #ffffff; /* cards, inputs, panels */
+  --color-mist: #f7f7f7; /* alternate section background */
   --color-muted: #6b7280;
   --color-line: #eaeaea;
+  --color-body: #374151; /* long-form text */
+
+  /* Fixed tokens (same in both themes) */
+  --color-night: #0b0b0b; /* always-dark sections: footer, mission band */
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: var(--font-manrope), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -22,6 +31,23 @@
   --shadow-float: 0 1px 2px rgb(0 0 0 / 0.05), 0 12px 40px -16px rgb(0 0 0 / 0.25);
 
   --animate-bob: bob 1.8s var(--ease-out-quart) infinite;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-ink: #f2f2f3;
+  --color-ink-soft: #d4d4d8;
+  --color-brand: #e5484d;
+  --color-brand-dark: #c93037;
+  --color-brand-soft: #2b1214;
+  --color-paper: #0a0a0b;
+  --color-surface: #131315;
+  --color-mist: #0f0f11;
+  --color-muted: #9b9ca3;
+  --color-line: #26262b;
+  --color-body: #c8c9cf;
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  --shadow-float: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 40px -16px rgb(0 0 0 / 0.7);
 }
 
 @keyframes bob {
@@ -44,6 +70,9 @@
     background: var(--color-paper);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease;
   }
 
   h1,
@@ -135,7 +164,7 @@ html.lenis body {
   }
 
   .prose-arict {
-    color: #374151;
+    color: var(--color-body);
     font-size: 1.0625rem;
     line-height: 1.75;
   }

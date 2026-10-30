@@ -17,7 +17,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/logi
         <div className="flex justify-center">
           <Logo withTagline className="w-56" />
         </div>
-        <div className="mt-10 rounded-3xl border border-line bg-white p-7 shadow-soft">
+        <div className="mt-10 rounded-3xl border border-line bg-surface p-7 shadow-soft">
           <h1 className="text-xl font-semibold tracking-tight">Sign in to ARICT Admin</h1>
           <p className="mt-1 text-sm text-muted">For committee members with an admin account.</p>
           <LoginForm next={typeof next === "string" ? next : ""} />

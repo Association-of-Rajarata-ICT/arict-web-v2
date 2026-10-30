@@ -59,7 +59,7 @@ export default async function AboutPage() {
       </div>
 
       {(about.mission || about.vision) && (
-        <section aria-label="Mission and vision" className="bg-ink py-20 text-white sm:py-28">
+        <section aria-label="Mission and vision" className="bg-night py-20 text-white dark:border-y dark:border-white/10 sm:py-28">
           <StaggerContainer className="container-page grid gap-10 md:grid-cols-2 md:gap-16">
             {about.mission && (
               <StaggerItem>
@@ -118,7 +118,7 @@ export default async function AboutPage() {
             </FadeUp>
             <StaggerContainer as="ul" className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {about.values.map((v) => (
-                <StaggerItem as="li" key={v.title} className="rounded-3xl border border-line bg-white p-7">
+                <StaggerItem as="li" key={v.title} className="rounded-3xl border border-line bg-surface p-7">
                   <h3 className="text-lg font-semibold">{v.title}</h3>
                   {v.description && <p className="mt-2 text-sm leading-relaxed text-muted">{v.description}</p>}
                 </StaggerItem>

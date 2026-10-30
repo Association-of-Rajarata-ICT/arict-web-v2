@@ -26,7 +26,7 @@ export function EventCard({
   return (
     <article
       className={cn(
-        "group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white transition-[box-shadow,transform,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-black/10 hover:shadow-[0_24px_50px_-28px_rgb(0_0_0/0.35)]",
+        "group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-surface transition-[box-shadow,transform,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-black/10 hover:shadow-[0_24px_50px_-28px_rgb(0_0_0/0.35)]",
         className,
       )}
     >
@@ -42,7 +42,7 @@ export function EventCard({
         ) : (
           <CoverFallback label={event.category} />
         )}
-        <div className="absolute top-4 left-4 flex min-w-14 flex-col items-center rounded-2xl bg-white/95 px-3 py-2 text-center shadow-soft backdrop-blur">
+        <div className="absolute top-4 left-4 flex min-w-14 flex-col items-center rounded-2xl bg-surface/95 px-3 py-2 text-center shadow-soft backdrop-blur">
           <span className="font-display text-xl leading-none font-semibold tracking-tight text-ink">{day}</span>
           <span className="mt-1 text-[10px] font-semibold tracking-[0.14em] text-brand uppercase">{month}</span>
           <span className="sr-only">{year}</span>

@@ -55,7 +55,7 @@ export function AboutPreview({ about, stats }: { about: SiteSettings["aboutPrevi
             {stats.items.map((s, i) => (
               <StaggerItem
                 key={s.label}
-                className={`bg-white p-6 sm:p-8 ${stats.items.length % 2 === 1 && i === 0 ? "col-span-2" : ""}`}
+                className={`bg-surface p-6 sm:p-8 ${stats.items.length % 2 === 1 && i === 0 ? "col-span-2" : ""}`}
               >
                 <p className="font-display text-4xl font-semibold tracking-[-0.04em] text-ink sm:text-5xl">
                   <AnimatedCounter value={s.value} suffix={s.suffix} />
@@ -86,8 +86,8 @@ export function WhatWeDo({ data }: { data: SiteSettings["whatWeDo"] }) {
             const Icon = ICONS[item.icon] ?? Lightbulb;
             return (
               <StaggerItem as="li" key={`${item.title}-${i}`}>
-                <div className="group relative h-full overflow-hidden rounded-3xl border border-line bg-white p-7 transition-[box-shadow,transform] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_24px_50px_-30px_rgb(0_0_0/0.35)]">
-                  <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-mist text-ink transition-colors duration-300 group-hover:bg-ink group-hover:text-white">
+                <div className="group relative h-full overflow-hidden rounded-3xl border border-line bg-surface p-7 transition-[box-shadow,transform] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_24px_50px_-30px_rgb(0_0_0/0.35)]">
+                  <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-mist text-ink transition-colors duration-300 group-hover:bg-ink group-hover:text-paper">
                     <Icon aria-hidden className="size-5" strokeWidth={1.75} />
                   </span>
                   <h3 className="mt-8 text-lg font-semibold tracking-tight text-ink">{item.title}</h3>

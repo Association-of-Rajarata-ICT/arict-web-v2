@@ -19,7 +19,7 @@ const LINKS = [
 export default function NotFound() {
   return (
     <main className="relative flex min-h-svh flex-1 flex-col items-center justify-center overflow-hidden px-4 py-24 text-center">
-      <div aria-hidden className="pointer-events-none absolute inset-0 opacity-40 [background-image:radial-gradient(circle_at_1px_1px,rgb(0_0_0/0.12)_1px,transparent_0)] [background-size:22px_22px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 opacity-40 [background-image:radial-gradient(circle_at_1px_1px,rgb(0_0_0/0.12)_1px,transparent_0)] dark:[background-image:radial-gradient(circle_at_1px_1px,rgb(255_255_255/0.07)_1px,transparent_0)] [background-size:22px_22px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
       <Link href="/" aria-label="ARICT home" className="relative">
         <Logo className="h-6" />
       </Link>

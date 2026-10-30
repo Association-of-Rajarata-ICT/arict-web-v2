@@ -34,7 +34,7 @@ export function AdminHeader({
 
 export function Card({ children, className, title, description }: { children: ReactNode; className?: string; title?: string; description?: ReactNode }) {
   return (
-    <section className={cn("rounded-2xl border border-line bg-white p-5 sm:p-6", className)}>
+    <section className={cn("rounded-2xl border border-line bg-surface p-5 sm:p-6", className)}>
       {title && <h2 className="text-base font-semibold">{title}</h2>}
       {description && <p className="mt-1 text-sm text-muted">{description}</p>}
       <div className={cn(title && "mt-5")}>{children}</div>
@@ -43,22 +43,22 @@ export function Card({ children, className, title, description }: { children: Re
 }
 
 const STATUS_TONES: Record<string, string> = {
-  pending: "bg-amber-50 text-amber-800 border-amber-200",
-  under_review: "bg-sky-50 text-sky-800 border-sky-200",
-  reviewing: "bg-sky-50 text-sky-800 border-sky-200",
-  accepted: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  rejected: "bg-red-50 text-red-700 border-red-200",
-  needs_changes: "bg-orange-50 text-orange-800 border-orange-200",
+  pending: "bg-amber-50 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/25 text-amber-800 border-amber-200",
+  under_review: "bg-sky-50 dark:bg-sky-500/10 dark:text-sky-300 dark:border-sky-500/25 text-sky-800 border-sky-200",
+  reviewing: "bg-sky-50 dark:bg-sky-500/10 dark:text-sky-300 dark:border-sky-500/25 text-sky-800 border-sky-200",
+  accepted: "bg-emerald-50 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/25 text-emerald-700 dark:text-emerald-400 border-emerald-200",
+  rejected: "bg-red-50 dark:bg-red-500/10 dark:text-red-300 dark:border-red-500/25 text-red-700 dark:text-red-400 border-red-200",
+  needs_changes: "bg-orange-50 dark:bg-orange-500/10 dark:text-orange-300 dark:border-orange-500/25 text-orange-800 border-orange-200",
   archived: "bg-mist text-muted border-line",
-  published: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  published: "bg-emerald-50 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/25 text-emerald-700 dark:text-emerald-400 border-emerald-200",
   draft: "bg-mist text-muted border-line",
   featured: "bg-brand-soft text-brand border-brand/15",
-  current: "bg-ink text-white border-ink",
-  scheduled: "bg-sky-50 text-sky-800 border-sky-200",
-  postponed: "bg-amber-50 text-amber-800 border-amber-200",
-  cancelled: "bg-red-50 text-red-700 border-red-200",
+  current: "bg-ink text-paper border-ink",
+  scheduled: "bg-sky-50 dark:bg-sky-500/10 dark:text-sky-300 dark:border-sky-500/25 text-sky-800 border-sky-200",
+  postponed: "bg-amber-50 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/25 text-amber-800 border-amber-200",
+  cancelled: "bg-red-50 dark:bg-red-500/10 dark:text-red-300 dark:border-red-500/25 text-red-700 dark:text-red-400 border-red-200",
   completed: "bg-mist text-ink/70 border-line",
-  in_progress: "bg-amber-50 text-amber-800 border-amber-200",
+  in_progress: "bg-amber-50 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/25 text-amber-800 border-amber-200",
 };
 
 export function StatusBadge({ status, label }: { status: string; label?: string }) {
@@ -71,7 +71,7 @@ export function StatusBadge({ status, label }: { status: string; label?: string 
 
 export function Table({ children }: { children: ReactNode }) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-line bg-white">
+    <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
       <table className="w-full min-w-[640px] text-left text-sm [&_tbody_tr:last-child_td]:border-b-0">{children}</table>
     </div>
   );
@@ -87,7 +87,7 @@ export function Td({ children, className }: { children?: ReactNode; className?: 
 
 export function AdminEmpty({ title, description, action }: { title: string; description?: string; action?: ReactNode }) {
   return (
-    <div className="rounded-2xl border border-dashed border-line bg-white px-6 py-14 text-center">
+    <div className="rounded-2xl border border-dashed border-line bg-surface px-6 py-14 text-center">
       <p className="font-semibold">{title}</p>
       {description && <p className="mt-1 text-sm text-muted">{description}</p>}
       {action && <div className="mt-5">{action}</div>}
@@ -124,7 +124,7 @@ export function SearchFilters({
           defaultValue={q}
           placeholder={placeholder}
           maxLength={100}
-          className="h-10 w-full rounded-xl border border-line bg-white pr-3 pl-10 text-sm outline-none focus:border-ink/40 focus:ring-4 focus:ring-ink/5"
+          className="h-10 w-full rounded-xl border border-line bg-surface pr-3 pl-10 text-sm outline-none focus:border-ink/40 focus:ring-4 focus:ring-ink/5"
         />
       </div>
       {filters.map((f) => (
@@ -136,7 +136,7 @@ export function SearchFilters({
             id={`admin-${f.name}`}
             name={f.name}
             defaultValue={f.value ?? ""}
-            className="h-10 w-full rounded-xl border border-line bg-white px-3 text-sm outline-none focus:border-ink/40 sm:w-auto"
+            className="h-10 w-full rounded-xl border border-line bg-surface px-3 text-sm outline-none focus:border-ink/40 sm:w-auto"
           >
             <option value="">{f.label}</option>
             {f.options.map((o) => (
@@ -147,7 +147,7 @@ export function SearchFilters({
           </select>
         </div>
       ))}
-      <button type="submit" className="h-10 rounded-xl bg-ink px-4 text-sm font-medium text-white hover:bg-ink-soft">
+      <button type="submit" className="h-10 rounded-xl bg-ink px-4 text-sm font-medium text-paper hover:bg-ink-soft">
         Apply
       </button>
     </form>
@@ -163,7 +163,7 @@ export function Notice({ searchParams }: { searchParams: Record<string, string |
       role="status"
       className={cn(
         "mb-6 rounded-xl border px-4 py-3 text-sm",
-        denied ? "border-amber-200 bg-amber-50 text-amber-800" : "border-emerald-200 bg-emerald-50 text-emerald-800",
+        denied ? "border-amber-200 bg-amber-50 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/25 text-amber-800" : "border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/25 text-emerald-800",
       )}
     >
       {denied ? "You don't have permission to open that page." : typeof saved === "string" && saved.length > 1 ? saved : "Changes saved."}
