@@ -188,6 +188,7 @@ The Contact Us form sends email straight from the browser through EmailJS. No ma
 1. **Create an account** at https://www.emailjs.com.
 2. **Add an email service** (Email Services → Add New Service) and connect the official ARICT inbox (for example Gmail or Outlook).
 3. **Create a template** (Email Templates → Create New Template) called "Contact Us".
+   Paste [the branded HTML template](templates/emailjs/contact-notification.html) into the template's HTML/code editor. See [the template setup guide](templates/emailjs/README.md) for exact dashboard fields and [sample test parameters](templates/emailjs/sample-params.json).
 4. **Set the template variables.** Use these exact names:
 
    | Variable | Content |
@@ -201,7 +202,7 @@ The Contact Us form sends email straight from the browser through EmailJS. No ma
    | `{{submitted_at}}` | Date and time (Sri Lanka time) |
    | `{{source_page}}` | Page URL the form was sent from |
 
-   Suggested settings: **To Email** = the ARICT inbox, **Subject** = `New message: {{subject}}`, **Reply To** = `{{reply_to}}` (so "Reply" goes straight to the sender), and **From Name** = `{{from_name}} via arict.lk`.
+   Suggested settings: **To Email** = the ARICT inbox, **Subject** = `[ARICT Website] {{subject}}`, **Reply To** = `{{reply_to}}` (so "Reply" goes straight to the sender), and **From Name** = `ARICT Website`. For **From Email**, use the connected email service's default address.
 
    Example body:
    ```
@@ -241,6 +242,7 @@ Git repository → Vercel project → Neon Postgres → environment variables �
    DATABASE_URL="…" SEED_ADMIN_EMAIL=you@arict.lk SEED_ADMIN_PASSWORD='a-long-password' npm run db:create-admin
    ```
 8. Sign in at https://arict.lk/admin and fill in Site Settings: contact email, social links and hero video.
+9. **Analytics → Enable** in the Vercel project to start collecting visitor stats. The `<SiteAnalytics />` component (`components/analytics.tsx`, rendered in `app/layout.tsx`) is already installed. It tracks public pages only; `/admin` page views are dropped in `beforeSend`. Vercel Web Analytics uses no cookies. In development it runs in debug mode and only logs to the browser console.
 
 > Production builds prerender public pages, so the database must be reachable at build time. The Neon integration takes care of this.
 
