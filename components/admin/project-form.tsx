@@ -59,7 +59,6 @@ export function ProjectForm({
       {Object.entries(extraFields ?? {}).map(([k, v]) => (
         <input key={k} type="hidden" name={k} value={v} />
       ))}
-      {state.message && <FormMessage tone={state.ok ? "success" : "error"}>{state.message}</FormMessage>}
 
       <Card title="Basics">
         <div className="space-y-5">

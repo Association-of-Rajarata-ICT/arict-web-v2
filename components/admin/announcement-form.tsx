@@ -5,7 +5,7 @@ import { saveAnnouncement } from "@/actions/admin/announcements";
 import type { Announcement } from "@/lib/db/schema";
 import { ANNOUNCEMENT_KIND_LABELS } from "@/lib/announcements";
 import { Button } from "@/components/ui/button";
-import { Checkbox, Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
+import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { useFormAction } from "@/components/ui/use-form-action";
 import { Card } from "./ui";
@@ -18,7 +18,6 @@ export function AnnouncementForm({ announcement }: { announcement?: Announcement
   return (
     <form key={formKey} onSubmit={onSubmit} noValidate className="space-y-6">
       {announcement && <input type="hidden" name="id" value={announcement.id} />}
-      {state.message && <FormMessage tone={state.ok ? "success" : "error"}>{state.message}</FormMessage>}
       <Card title="Announcement" description="Shown in a popup when visitors open the public website.">
         <div className="space-y-5">
           <div className="grid gap-5 sm:grid-cols-[1fr_180px]">

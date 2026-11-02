@@ -5,12 +5,12 @@ import { CheckCircle2 } from "lucide-react";
 import { submitJoinApplication } from "@/actions/public";
 import { JOIN_INTERESTS } from "@/lib/validations/public";
 import { Button, LinkButton } from "@/components/ui/button";
-import { Field, FormMessage, Honeypot, Input, Select, Textarea } from "@/components/ui/form";
+import { Field, Honeypot, Input, Select, Textarea } from "@/components/ui/form";
 import { useFormAction } from "@/components/ui/use-form-action";
 import { useFormToken } from "@/components/ui/use-form-token";
 
 export function JoinForm() {
-  const { state, onSubmit, pending } = useFormAction(submitJoinApplication);
+  const { state, onSubmit, pending } = useFormAction(submitJoinApplication, { successToast: false });
   const token = useFormToken();
   const formRef = useRef<HTMLFormElement>(null);
   const e = state.fieldErrors ?? {};
@@ -40,7 +40,6 @@ export function JoinForm() {
     <form ref={formRef} onSubmit={onSubmit} noValidate className="relative space-y-10 rounded-3xl border border-line bg-surface p-6 shadow-soft sm:p-8">
       <Honeypot />
       <input type="hidden" name="form_token" value={token} />
-      {state.message && <FormMessage tone="error">{state.message}</FormMessage>}
 
       <fieldset className="space-y-5">
         <legend className="text-lg font-semibold tracking-tight">Your details</legend>

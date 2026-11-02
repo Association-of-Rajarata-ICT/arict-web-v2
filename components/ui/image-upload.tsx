@@ -2,12 +2,13 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { ImagePlus, Loader2, X } from "lucide-react";
+import { toast } from "sonner";
 import { prepareImage } from "@/lib/image-compress";
 import { uploadImage } from "@/lib/upload-client";
 import { IMAGE_ACCEPT, validateImageFile, type UploadScope } from "@/lib/uploads";
 import { cn } from "@/lib/utils";
 
-type Item = { key: string; url?: string; preview?: string; status: "uploading" | "done" | "error"; error?: string };
+type Item = { key: string; url?: string; preview?: string; status: "uploading" | "done" | "error" };
 
 /**
  * Uploads images as soon as they are picked and keeps their URLs in hidden
@@ -41,15 +42,11 @@ export function ImageUpload({
   const [items, setItems] = useState<Item[]>(() =>
     defaultValue.filter(Boolean).map((url, i) => ({ key: `init-${i}`, url, preview: url, status: "done" })),
   );
-  const [message, setMessage] = useState<string | null>(null);
   const remaining = max - items.length;
 
   useEffect(() => {
     const form = inputRef.current?.form;
-    const clear = () => {
-      setItems([]);
-      setMessage(null);
-    };
+    const clear = () => setItems([]);
     form?.addEventListener("reset", clear);
     return () => form?.removeEventListener("reset", clear);
   }, []);
@@ -59,34 +56,34 @@ export function ImageUpload({
 
   async function onFiles(files: FileList | null) {
     if (!files?.length) return;
-    setMessage(null);
     const picked = Array.from(files).slice(0, Math.max(remaining, 0));
-    if (files.length > picked.length) setMessage(`You can add up to ${max} image${max === 1 ? "" : "s"}.`);
+    if (files.length > picked.length) toast.error(`You can add up to ${max} image${max === 1 ? "" : "s"}.`);
 
     // Reset the picker right away so choosing the same file again still triggers a change.
     if (inputRef.current) inputRef.current.value = "";
     onBusyChange?.(true);
     try {
-      const queued: { item: Item; file: File }[] = [];
+      const queued: { item: Item; file: File; name: string }[] = [];
       for (const original of picked) {
         // Large phone/camera photos are resized in the browser to fit the 4 MB limit.
         const file = await prepareImage(original);
         const invalid = validateImageFile(file);
         if (invalid) {
-          setMessage(`${original.name}: ${invalid}`);
+          toast.error(`${original.name}: ${invalid}`);
           continue;
         }
-        queued.push({ item: { key: crypto.randomUUID(), preview: URL.createObjectURL(file), status: "uploading" }, file });
+        queued.push({ item: { key: crypto.randomUUID(), preview: URL.createObjectURL(file), status: "uploading" }, file, name: original.name });
       }
       if (!queued.length) return;
       setItems((prev) => (max === 1 ? queued.slice(0, 1).map((q) => q.item) : [...prev, ...queued.map((q) => q.item)]));
       await Promise.all(
-        queued.map(async ({ item, file }) => {
+        queued.map(async ({ item, file, name }) => {
           try {
             const url = await uploadImage(file, scope);
             update(item.key, { url, status: "done" });
           } catch (err) {
-            update(item.key, { status: "error", error: err instanceof Error ? err.message : "Upload failed." });
+            update(item.key, { status: "error" });
+            toast.error(`${name}: ${err instanceof Error ? err.message : "Upload failed."}`);
           }
         }),
       );
@@ -96,7 +93,7 @@ export function ImageUpload({
   }
 
   const remove = (key: string) => setItems((prev) => prev.filter((it) => it.key !== key));
-  const shownError = message ?? error;
+  const shownError = error;
 
   return (
     <div className="flex flex-col gap-2">
@@ -120,7 +117,7 @@ export function ImageUpload({
               </span>
             )}
             {item.status === "error" && (
-              <span className="absolute inset-x-2 bottom-2 rounded-lg bg-red-600/90 px-2 py-1 text-xs font-medium text-white">{item.error}</span>
+              <span className="absolute inset-x-2 bottom-2 rounded-lg bg-red-600/90 px-2 py-1 text-xs font-medium text-white">Upload failed</span>
             )}
             <button
               type="button"

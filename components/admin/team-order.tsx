@@ -7,7 +7,6 @@ import { saveMemberOrder } from "@/actions/admin/team";
 import type { TeamPosition } from "@/lib/db/schema";
 import { TEAM_SECTIONS, memberSection, positionLabel, sortMembers, yearLabel, type TeamSectionId } from "@/lib/team";
 import { Button } from "@/components/ui/button";
-import { FormMessage } from "@/components/ui/form";
 import { Avatar } from "@/components/ui/misc";
 import { useFormAction } from "@/components/ui/use-form-action";
 import { Card } from "./ui";
@@ -44,7 +43,7 @@ export function TeamOrderEditor({ termId, members }: { termId: string; members: 
     setOrder(saved);
   }
   const [announcement, setAnnouncement] = useState("");
-  const { state, onSubmit, pending } = useFormAction(saveMemberOrder, { refreshOnSuccess: true });
+  const { onSubmit, pending } = useFormAction(saveMemberOrder, { refreshOnSuccess: true });
   const byId = new Map(members.map((m) => [m.id, m]));
   const ids = flatten(order);
   const dirty = ids.join() !== savedKey;
@@ -64,7 +63,6 @@ export function TeamOrderEditor({ termId, members }: { termId: string; members: 
       {ids.map((id) => (
         <input key={id} type="hidden" name="order" value={id} />
       ))}
-      {state.message && <FormMessage tone={state.ok ? "success" : "error"}>{state.message}</FormMessage>}
       <p role="status" aria-live="polite" className="sr-only">{announcement}</p>
 
       {TEAM_SECTIONS.map((section) => {

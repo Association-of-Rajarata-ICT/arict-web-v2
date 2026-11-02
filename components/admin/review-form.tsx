@@ -2,7 +2,7 @@
 
 import type { ActionState } from "@/lib/validations/common";
 import { Button } from "@/components/ui/button";
-import { Field, FormMessage, Select, Textarea } from "@/components/ui/form";
+import { Field, Select, Textarea } from "@/components/ui/form";
 import { useFormAction } from "@/components/ui/use-form-action";
 
 /** Status + internal notes form shared by project submissions and join applications. */
@@ -25,7 +25,6 @@ export function ReviewForm({
   return (
     <form key={formKey} onSubmit={onSubmit} className="space-y-4">
       <input type="hidden" name="id" value={id} />
-      {state.message && <FormMessage tone={state.ok ? "success" : "error"}>{state.message}</FormMessage>}
       <Field label="Status" name="status" required>
         <Select name="status" defaultValue={status}>
           {options.map((o) => (

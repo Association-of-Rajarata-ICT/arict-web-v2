@@ -4,19 +4,16 @@ import { useState, type ReactNode } from "react";
 import { saveSettings } from "@/actions/admin/settings";
 import { WHAT_WE_DO_ICONS, type SettingsKey, type SiteSettings } from "@/lib/settings";
 import { Button } from "@/components/ui/button";
-import { Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
+import { Field, Input, Select, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { useFormAction } from "@/components/ui/use-form-action";
-import { FormComplete } from "@/components/ui/form-complete";
 import { Card } from "./ui";
 
 function SectionForm({ section, children, busy }: { section: SettingsKey; children: (errors: Record<string, string>) => ReactNode; busy?: boolean }) {
-  const { state, onSubmit, pending, reset } = useFormAction(saveSettings, { refreshOnSuccess: true });
-  if (state.ok) return <FormComplete message={state.message} reopenLabel="Edit this section" onReopen={reset} />;
+  const { state, onSubmit, pending } = useFormAction(saveSettings, { refreshOnSuccess: true });
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-6">
       <input type="hidden" name="section" value={section} />
-      {state.message && <FormMessage tone={state.ok ? "success" : "error"}>{state.message}</FormMessage>}
       {children(state.fieldErrors ?? {})}
       <div className="sticky bottom-4 z-10 flex justify-end">
         <Button type="submit" variant="dark" size="lg" disabled={pending || busy} className="shadow-float">

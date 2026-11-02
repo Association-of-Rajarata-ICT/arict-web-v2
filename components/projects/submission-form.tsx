@@ -6,14 +6,14 @@ import { submitProject } from "@/actions/public";
 import { MAX_SUBMISSION_SCREENSHOTS } from "@/lib/uploads";
 import { PROJECT_CATEGORIES } from "@/lib/validations/public";
 import { Button, LinkButton } from "@/components/ui/button";
-import { Field, FormMessage, Honeypot, Input, Textarea } from "@/components/ui/form";
+import { Field, Honeypot, Input, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { SelectWithOther } from "@/components/ui/select-with-other";
 import { useFormAction } from "@/components/ui/use-form-action";
 import { useFormToken } from "@/components/ui/use-form-token";
 
 export function SubmissionForm({ currentYear }: { currentYear: number }) {
-  const { state, onSubmit, pending } = useFormAction(submitProject);
+  const { state, onSubmit, pending } = useFormAction(submitProject, { successToast: false });
   const token = useFormToken();
   const [uploading, setUploading] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
@@ -55,7 +55,6 @@ export function SubmissionForm({ currentYear }: { currentYear: number }) {
       <Honeypot />
       <input type="hidden" name="form_token" value={token} />
 
-      {state.message && !state.ok && <FormMessage tone="error">{state.message}</FormMessage>}
 
       <fieldset className="space-y-6">
         <legend className="text-lg font-semibold tracking-tight">About the project</legend>

@@ -44,3 +44,4 @@ next-env.d.ts
 # local uploads (development)
 /.data
 CODEBASE_AUDIT_2026-11-02.md
+output/social/*

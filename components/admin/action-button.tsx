@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useTransition, type ReactNode } from "react";
+import { useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import type { ActionState } from "@/lib/validations/common";
 import { cn } from "@/lib/utils";
 
 /**
  * Small button that runs a Server Action with hidden fields, optionally after a
- * confirmation prompt, and shows any error inline.
+ * confirmation prompt. Errors (and any success message) are shown as toasts.
  */
 export function ActionButton({
   action,
@@ -28,18 +29,20 @@ export function ActionButton({
   title?: string;
 }) {
   const [pending, start] = useTransition();
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const run = () => {
     if (confirmText && !window.confirm(confirmText)) return;
-    setError(null);
     const fd = new FormData();
     for (const [k, v] of Object.entries(fields)) fd.append(k, v);
     start(async () => {
       const result = await action({ ok: false }, fd);
-      if (!result.ok) setError(result.message ?? "Action failed.");
-      else router.refresh();
+      if (!result.ok) {
+        toast.error(result.message ?? "Action failed. Please try again.");
+        return;
+      }
+      if (result.message) toast.success(result.message);
+      router.refresh();
     });
   };
 
@@ -50,26 +53,19 @@ export function ActionButton({
   };
 
   return (
-    <span className="inline-flex flex-col items-start">
-      <button
-        type="button"
-        onClick={run}
-        disabled={pending}
-        title={title}
-        className={cn(
-          "inline-flex h-8 items-center gap-1.5 rounded-lg border px-3 text-xs font-medium whitespace-nowrap transition-colors disabled:opacity-60",
-          tones[tone],
-          className,
-        )}
-      >
-        {pending && <Loader2 aria-hidden className="size-3.5 animate-spin" />}
-        {children}
-      </button>
-      {error && (
-        <span role="alert" className="mt-1 max-w-56 text-xs text-red-600 dark:text-red-400">
-          {error}
-        </span>
+    <button
+      type="button"
+      onClick={run}
+      disabled={pending}
+      title={title}
+      className={cn(
+        "inline-flex h-8 items-center gap-1.5 rounded-lg border px-3 text-xs font-medium whitespace-nowrap transition-colors disabled:opacity-60",
+        tones[tone],
+        className,
       )}
-    </span>
+    >
+      {pending && <Loader2 aria-hidden className="size-3.5 animate-spin" />}
+      {children}
+    </button>
   );
 }

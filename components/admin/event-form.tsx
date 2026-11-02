@@ -5,7 +5,7 @@ import { saveEvent } from "@/actions/admin/events";
 import type { Event, EventImage } from "@/lib/db/schema";
 import { EVENT_CATEGORIES } from "@/lib/validations/public";
 import { Button } from "@/components/ui/button";
-import { Checkbox, Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
+import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { SelectWithOther } from "@/components/ui/select-with-other";
 import { useFormAction } from "@/components/ui/use-form-action";
@@ -30,7 +30,6 @@ export function EventForm({ event, categories }: { event?: Event & { images: Eve
   return (
     <form key={formKey} onSubmit={onSubmit} noValidate className="space-y-6">
       {event && <input type="hidden" name="id" value={event.id} />}
-      {state.message && <FormMessage tone={state.ok ? "success" : "error"}>{state.message}</FormMessage>}
 
       <Card title="Basics">
         <div className="space-y-5">

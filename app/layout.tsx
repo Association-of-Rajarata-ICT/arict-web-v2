@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Manrope } from "next/font/google";
 import { SiteAnalytics } from "@/components/analytics";
+import { Toaster } from "@/components/ui/toaster";
 import { THEME_STORAGE_KEY } from "@/lib/theme";
 import { SITE, SITE_URL } from "@/lib/site";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/metadata";
@@ -63,6 +64,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="flex min-h-svh flex-col">
         {children}
+        <Toaster />
         <SiteAnalytics />
       </body>
     </html>

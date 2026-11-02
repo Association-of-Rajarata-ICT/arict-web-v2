@@ -12,10 +12,9 @@ import {
   POSITION_LABELS,
 } from "@/lib/team";
 import { Button } from "@/components/ui/button";
-import { Checkbox, Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
+import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { useFormAction } from "@/components/ui/use-form-action";
-import { FormComplete } from "@/components/ui/form-complete";
 import { Card } from "./ui";
 
 export function MemberForm({
@@ -52,7 +51,6 @@ export function MemberForm({
   return (
     <form key={formKey} onSubmit={onSubmit} noValidate className="space-y-6">
       {member && <input type="hidden" name="id" value={member.id} />}
-      {state.message && <FormMessage tone={state.ok ? "success" : "error"}>{state.message}</FormMessage>}
 
       <Card title="Role">
         <div className="grid gap-5 sm:grid-cols-3">
@@ -202,16 +200,15 @@ export function MemberForm({
 }
 
 export function TermForm({ term }: { term?: TeamTerm }) {
-  const { state, onSubmit, pending, reset } = useFormAction(saveTerm, {
+  const { state, onSubmit, pending, formKey } = useFormAction(saveTerm, {
     successHref: term ? "/admin/team/terms" : undefined,
     refreshOnSuccess: !term,
+    version: term?.updatedAt,
   });
   const e = state.fieldErrors ?? {};
-  if (state.ok) return <FormComplete message={state.message} reopenLabel={term ? "Edit term" : "Add another term"} onReopen={reset} />;
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-5">
+    <form key={formKey} onSubmit={onSubmit} noValidate className="space-y-5">
       {term && <input type="hidden" name="id" value={term.id} />}
-      {state.message && <FormMessage tone={state.ok ? "success" : "error"}>{state.message}</FormMessage>}
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Title" name="title" required error={e.title}>
           <Input name="title" defaultValue={term?.title} placeholder="e.g. 2027/28 Committee" required error={e.title} />

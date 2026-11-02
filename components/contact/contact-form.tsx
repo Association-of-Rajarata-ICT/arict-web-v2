@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 import { isEmailjsConfigured, sendContactEmail } from "@/lib/emailjs";
 import { clearForm } from "@/lib/clear-form";
-import { FORM_NOTIFICATION_DURATION_MS } from "@/lib/form-feedback";
 import { contactSchema } from "@/lib/validations/public";
 import { fieldErrorsFrom, type FieldErrors } from "@/lib/validations/common";
 import { Button } from "@/components/ui/button";
@@ -14,13 +14,11 @@ const COOLDOWN_MS = 60_000;
 const MIN_FILL_MS = 3_000;
 const STORAGE_KEY = "arict-contact-last-sent";
 
-type Status = "idle" | "sending" | "success" | "error";
+type Status = "idle" | "sending" | "success";
 
 export function ContactForm({ fallbackEmail }: { fallbackEmail?: string }) {
   const [status, setStatus] = useState<Status>("idle");
-  const [dismissedStatus, setDismissedStatus] = useState<Status | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [notice, setNotice] = useState<string | null>(null);
   const mountedAt = useRef(0);
   const formRef = useRef<HTMLFormElement>(null);
   const configured = isEmailjsConfigured();
@@ -28,18 +26,6 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail?: string }) {
   useEffect(() => {
     mountedAt.current = Date.now();
   }, []);
-
-  useEffect(() => {
-    if (status !== "success" && status !== "error") return;
-    const timer = setTimeout(() => setDismissedStatus(status), FORM_NOTIFICATION_DURATION_MS);
-    return () => clearTimeout(timer);
-  }, [status]);
-
-  useEffect(() => {
-    if (!notice) return;
-    const timer = setTimeout(() => setNotice(null), FORM_NOTIFICATION_DURATION_MS);
-    return () => clearTimeout(timer);
-  }, [notice]);
 
   function lastSent() {
     try {
@@ -52,8 +38,6 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail?: string }) {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (status === "sending") return;
-    setDismissedStatus(null);
-    setNotice(null);
     const form = event.currentTarget;
     const fd = new FormData(form);
 
@@ -69,18 +53,19 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail?: string }) {
       const errs = fieldErrorsFrom(parsed.error);
       setErrors(errs);
       setStatus("idle");
+      toast.error("Please fix the highlighted fields.");
       form.querySelector<HTMLElement>(`[name="${Object.keys(errs)[0]}"]`)?.focus();
       return;
     }
     setErrors({});
 
     if (Date.now() - mountedAt.current < MIN_FILL_MS) {
-      setNotice("Please take a moment to review your message, then send it again.");
+      toast.info("Please take a moment to review your message, then send it again.");
       return;
     }
     const wait = lastSent() + COOLDOWN_MS - Date.now();
     if (wait > 0) {
-      setNotice(`Please wait ${Math.ceil(wait / 1000)} seconds before sending another message.`);
+      toast.warning(`Please wait ${Math.ceil(wait / 1000)} seconds before sending another message.`);
       return;
     }
 
@@ -94,21 +79,20 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail?: string }) {
       setStatus("success");
     } catch (error) {
       console.error("EmailJS send failed", error);
-      setStatus("error");
+      setStatus("idle");
+      toast.error("We couldn't send your message. Please try again.");
     }
   }
 
   if (status === "success") {
     return (
       <div className="rounded-3xl border border-line bg-surface p-8 text-center shadow-soft sm:p-10">
-        {dismissedStatus !== "success" && (
-          <div role="status">
-            <CheckCircle2 aria-hidden className="mx-auto size-12 text-emerald-600 dark:text-emerald-400" />
-            <p className="mt-5 text-lg font-semibold">Message sent</p>
-            <p className="mx-auto mt-2 max-w-sm text-muted">Your message has been sent successfully. We&apos;ll get back to you soon.</p>
-          </div>
-        )}
-        <Button variant="outline" className="mt-7" onClick={() => { setStatus("idle"); setDismissedStatus(null); setErrors({}); mountedAt.current = Date.now(); }}>
+        <div role="status">
+          <CheckCircle2 aria-hidden className="mx-auto size-12 text-emerald-600 dark:text-emerald-400" />
+          <p className="mt-5 text-lg font-semibold">Message sent</p>
+          <p className="mx-auto mt-2 max-w-sm text-muted">Your message has been sent successfully. We&apos;ll get back to you soon.</p>
+        </div>
+        <Button variant="outline" className="mt-7" onClick={() => { setStatus("idle"); setErrors({}); mountedAt.current = Date.now(); }}>
           Send another message
         </Button>
       </div>
@@ -135,10 +119,6 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail?: string }) {
           ) : null}
         </FormMessage>
       )}
-      {status === "error" && dismissedStatus !== "error" && (
-        <FormMessage tone="error">We couldn&apos;t send your message. Please try again.</FormMessage>
-      )}
-      {notice && <FormMessage tone="info">{notice}</FormMessage>}
 
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Name" name="name" required error={errors.name}>

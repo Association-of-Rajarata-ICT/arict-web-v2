@@ -3,17 +3,14 @@
 import { useState } from "react";
 import { createUser, resetPassword } from "@/actions/admin/users";
 import { Button } from "@/components/ui/button";
-import { Field, FormMessage, Input, Select } from "@/components/ui/form";
+import { Field, Input, Select } from "@/components/ui/form";
 import { useFormAction } from "@/components/ui/use-form-action";
-import { FormComplete } from "@/components/ui/form-complete";
 
 export function CreateUserForm() {
-  const { state, onSubmit, pending, reset } = useFormAction(createUser, { refreshOnSuccess: true });
+  const { state, onSubmit, pending, formKey } = useFormAction(createUser, { refreshOnSuccess: true });
   const e = state.fieldErrors ?? {};
-  if (state.ok) return <FormComplete message={state.message} reopenLabel="Add another account" onReopen={reset} />;
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-4">
-      {state.message && <FormMessage tone={state.ok ? "success" : "error"}>{state.message}</FormMessage>}
+    <form key={formKey} onSubmit={onSubmit} noValidate className="space-y-4">
       <Field label="Name" name="name" required error={e.name}>
         <Input name="name" required error={e.name} />
       </Field>
@@ -39,8 +36,8 @@ export function CreateUserForm() {
 
 export function ResetPasswordForm({ id }: { id: string }) {
   const [open, setOpen] = useState(false);
-  const { state, onSubmit, pending, reset } = useFormAction(resetPassword);
-  if (state.ok) return <FormComplete message={state.message} reopenLabel="Reset password" onReopen={reset} />;
+  // Closes again after a successful reset; the result is shown as a toast.
+  const { onSubmit, pending } = useFormAction(resetPassword, { onClear: () => setOpen(false) });
   if (!open)
     return (
       <button type="button" onClick={() => setOpen(true)} className="h-8 rounded-lg border border-line px-3 text-xs font-medium hover:bg-mist">
@@ -56,7 +53,6 @@ export function ResetPasswordForm({ id }: { id: string }) {
           Save
         </button>
       </div>
-      {state.message && <span className={`text-xs ${state.ok ? "text-emerald-700 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>{state.message}</span>}
     </form>
   );
 }
