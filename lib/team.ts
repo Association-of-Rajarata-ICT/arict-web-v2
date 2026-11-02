@@ -25,7 +25,7 @@ export const POSITION_LABELS: Record<TeamPosition, string> = {
   other: "Other",
 };
 
-/** Longest title an admin can type for an "Other" position. */
+/** Longest title for an "Other" position (only on members saved with one; no longer offered). */
 export const CUSTOM_POSITION_MAX_LENGTH = OTHER_TEXT_MAX_LENGTH;
 
 /** The title shown for a member: the typed-in title for "Other" positions. */
@@ -54,6 +54,15 @@ export const ACADEMIC_YEAR_LABELS: Record<number, string> = {
   3: "3rd Year",
   4: "4th Year",
 };
+
+/** academicYear value for members who aren't students (e.g. lecturers); described in customYear. */
+export const OTHER_YEAR = 0;
+export const CUSTOM_YEAR_MAX_LENGTH = OTHER_TEXT_MAX_LENGTH;
+
+/** The year shown for a member: the typed-in text (e.g. "Senior Lecturer") for "Other". */
+export function yearLabel(m: { academicYear: number; customYear?: string | null }) {
+  return m.academicYear === OTHER_YEAR ? m.customYear || "Other" : ACADEMIC_YEAR_LABELS[m.academicYear];
+}
 
 /** Executive roles, including custom "Other" roles: shown in the Executive Committee, any academic year. */
 export function isExecutive(position: TeamPosition) {

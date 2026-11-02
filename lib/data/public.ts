@@ -295,6 +295,7 @@ const memberFields = {
   position: teamMembers.position,
   customPosition: teamMembers.customPosition,
   academicYear: teamMembers.academicYear,
+  customYear: teamMembers.customYear,
   image: teamMembers.image,
   linkedinUrl: teamMembers.linkedinUrl,
   portfolioUrl: teamMembers.portfolioUrl,

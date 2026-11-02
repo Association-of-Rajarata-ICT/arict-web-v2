@@ -77,6 +77,12 @@ export async function saveMember(_prev: ActionState, formData: FormData): Promis
       return fail("Committee members must be 1st, 2nd or 3rd year.", { academicYear: "Choose 1st, 2nd or 3rd year." });
     }
 
+    // Typed-in positions are no longer offered; only members who already have one keep it.
+    if (data.position === "other") {
+      const [current] = id ? await db.select({ position: teamMembers.position }).from(teamMembers).where(eq(teamMembers.id, id)) : [];
+      if (current?.position !== "other") return fail("Choose a position from the list.", { position: "Choose a position from the list." });
+    }
+
     try {
       const result = await db.transaction(async (tx) => {
         // Lock the term row so concurrent saves can't exceed the limits.

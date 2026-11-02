@@ -5,7 +5,7 @@ import { Reorder, useDragControls } from "framer-motion";
 import { ArrowDown, ArrowUp, GripVertical } from "lucide-react";
 import { saveMemberOrder } from "@/actions/admin/team";
 import type { TeamPosition } from "@/lib/db/schema";
-import { ACADEMIC_YEAR_LABELS, TEAM_SECTIONS, memberSection, positionLabel, sortMembers, type TeamSectionId } from "@/lib/team";
+import { TEAM_SECTIONS, memberSection, positionLabel, sortMembers, yearLabel, type TeamSectionId } from "@/lib/team";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/ui/form";
 import { Avatar } from "@/components/ui/misc";
@@ -18,6 +18,7 @@ type Member = {
   position: TeamPosition;
   customPosition: string | null;
   academicYear: number;
+  customYear: string | null;
   image: string | null;
   displayOrder: number;
 };
@@ -129,7 +130,7 @@ function OrderRow({ member, index, count, onMove }: { member: Member; index: num
         <p className="text-sm leading-snug font-medium break-words">{member.fullName}</p>
         <p className="truncate text-xs text-muted">
           {positionLabel(member)}
-          <span className="hidden sm:inline"> · {ACADEMIC_YEAR_LABELS[member.academicYear]}</span>
+          <span className="hidden sm:inline"> · {yearLabel(member)}</span>
         </p>
       </div>
       <div className="flex shrink-0 gap-1 sm:gap-1.5">

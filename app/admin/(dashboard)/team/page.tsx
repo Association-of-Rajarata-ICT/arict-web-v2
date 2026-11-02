@@ -8,7 +8,7 @@ import { LinkButton } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/misc";
 import { requirePage } from "@/lib/auth/session";
 import { getTermMembers, listTerms } from "@/lib/data/admin";
-import { ACADEMIC_YEAR_LABELS, COMMITTEE_LIMIT_PER_YEAR, COMMITTEE_YEARS, EXECUTIVE_POSITIONS, POSITION_LABELS, positionLabel } from "@/lib/team";
+import { ACADEMIC_YEAR_LABELS, COMMITTEE_LIMIT_PER_YEAR, COMMITTEE_YEARS, EXECUTIVE_POSITIONS, POSITION_LABELS, positionLabel, yearLabel } from "@/lib/team";
 import { cn } from "@/lib/utils";
 
 // Reads the session and live data on every request; blocking navigation is intended.
@@ -137,7 +137,7 @@ export default async function AdminTeamPage({ searchParams }: PageProps<"/admin/
                   </div>
                 </Td>
                 <Td>{positionLabel(m)}</Td>
-                <Td>{ACADEMIC_YEAR_LABELS[m.academicYear]}</Td>
+                <Td>{yearLabel(m)}</Td>
                 <Td>
                   <div className="flex flex-wrap justify-end gap-1.5">
                     <ActionButton action={toggleMemberFeatured} fields={{ id: m.id, value: String(!m.featuredOnHome) }}>

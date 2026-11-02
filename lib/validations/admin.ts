@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { eventStatus, joinStatus, projectStatus, submissionStatus, teamPosition } from "../db/schema";
-import { CUSTOM_POSITION_MAX_LENGTH, POSITION_LABELS } from "../team";
+import { CUSTOM_POSITION_MAX_LENGTH, CUSTOM_YEAR_MAX_LENGTH, OTHER_YEAR } from "../team";
 import { otherCategoryFields, resolveOtherCategory, validateOtherCategory } from "./other-category";
 import {
   checkbox,
@@ -102,27 +102,27 @@ export const teamMemberSchema = z
     fullName: requiredText("Full name", 120, 2),
     position: z.enum(teamPosition.enumValues, { error: "Choose a position." }),
     customPosition: optionalText(CUSTOM_POSITION_MAX_LENGTH, "Position title"),
-    academicYear: z.coerce.number().int().min(1, "Choose an academic year.").max(4),
+    academicYear: z.coerce.number().int().min(OTHER_YEAR, "Choose an academic year.").max(4, "Choose an academic year."),
+    customYear: optionalText(CUSTOM_YEAR_MAX_LENGTH, "Year details"),
     image: optionalImage,
     linkedinUrl: optionalUrl("LinkedIn URL"),
     portfolioUrl: optionalUrl("Portfolio URL"),
     featuredOnHome: checkbox,
   })
   .superRefine((v, ctx) => {
-    if (v.position !== "other") return;
-    if (!v.customPosition) {
-      ctx.addIssue({ code: "custom", path: ["customPosition"], message: "Enter the position title." });
-      return;
+    if (v.academicYear === OTHER_YEAR && !v.customYear) {
+      ctx.addIssue({ code: "custom", path: ["customYear"], message: "Please specify, e.g. Senior Lecturer." });
     }
-    const listed = Object.entries(POSITION_LABELS).find(
-      ([key, label]) => key !== "other" && label.toLowerCase() === v.customPosition!.toLowerCase(),
-    );
-    if (listed) {
-      ctx.addIssue({ code: "custom", path: ["customPosition"], message: `Choose “${listed[1]}” from the list instead.` });
+    if (v.position === "other" && !v.customPosition) {
+      ctx.addIssue({ code: "custom", path: ["customPosition"], message: "Enter the position title." });
     }
   })
-  // The title only belongs to "Other" positions.
-  .transform((v) => ({ ...v, customPosition: v.position === "other" ? v.customPosition : null }));
+  // The typed-in text only belongs with "Other".
+  .transform((v) => ({
+    ...v,
+    customPosition: v.position === "other" ? v.customPosition : null,
+    customYear: v.academicYear === OTHER_YEAR ? v.customYear : null,
+  }));
 
 export const submissionReviewSchema = z.object({
   id: z.uuid(),

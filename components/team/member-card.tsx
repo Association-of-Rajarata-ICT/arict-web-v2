@@ -1,14 +1,14 @@
 import Image from "next/image";
 import { Globe } from "lucide-react";
 import type { PublicMember } from "@/lib/data/public";
-import { ACADEMIC_YEAR_LABELS, positionLabel } from "@/lib/team";
+import { ACADEMIC_YEAR_LABELS, positionLabel, yearLabel } from "@/lib/team";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/misc";
 import { LinkedinIcon } from "@/components/ui/social-icons";
 
 type Member = Pick<
   PublicMember,
-  "fullName" | "position" | "customPosition" | "academicYear" | "image" | "linkedinUrl" | "portfolioUrl"
+  "fullName" | "position" | "customPosition" | "academicYear" | "customYear" | "image" | "linkedinUrl" | "portfolioUrl"
 >;
 
 export function MemberLinks({ member, className }: { member: Member; className?: string }) {
@@ -54,7 +54,7 @@ export function MemberCard({
 
   const large = variant === "large";
   const compact = variant === "compact";
-  const year = ACADEMIC_YEAR_LABELS[member.academicYear];
+  const year = yearLabel(member);
 
   return (
     <article className={cn(

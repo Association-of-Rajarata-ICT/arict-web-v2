@@ -66,7 +66,8 @@ export const teamPosition = pgEnum("team_position", [
   "editor",
   "junior_editor",
   "committee_member",
-  // A role typed in by an admin; its title is stored in team_members.custom_position.
+  // Typed-in role titles (team_members.custom_position). No longer offered for new
+  // members, but kept so members saved with one still display and can be edited.
   "other",
 ]);
 
@@ -194,7 +195,9 @@ export const teamMembers = pgTable(
     fullName: varchar("full_name", { length: 120 }).notNull(),
     position: teamPosition("position").notNull(),
     customPosition: varchar("custom_position", { length: 60 }),
+    // 1–4, or 0 for "Other" (e.g. lecturers), described in custom_year.
     academicYear: integer("academic_year").notNull(),
+    customYear: varchar("custom_year", { length: 60 }),
     image: text("image"),
     bio: varchar("bio", { length: 400 }),
     linkedinUrl: text("linkedin_url"),

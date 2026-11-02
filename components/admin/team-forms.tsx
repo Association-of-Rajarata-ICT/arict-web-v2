@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { saveMember, saveTerm } from "@/actions/admin/team";
 import type { TeamMember, TeamPosition, TeamTerm } from "@/lib/db/schema";
-import { CUSTOM_POSITION_MAX_LENGTH, EXECUTIVE_POSITIONS, POSITION_LABELS } from "@/lib/team";
+import { CUSTOM_POSITION_MAX_LENGTH, CUSTOM_YEAR_MAX_LENGTH, EXECUTIVE_POSITIONS, OTHER_YEAR, POSITION_LABELS } from "@/lib/team";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
@@ -22,13 +22,19 @@ export function MemberForm({
 }) {
   const defaultPosition = member?.position ?? "committee_member";
   const defaultCustom = member?.customPosition ?? "";
+  const defaultYear = String(member?.academicYear ?? 1);
+  const defaultCustomYear = member?.customYear ?? "";
   const [position, setPosition] = useState<TeamPosition | "">(defaultPosition);
   const [customPosition, setCustomPosition] = useState(defaultCustom);
+  const [year, setYear] = useState(defaultYear);
+  const [customYear, setCustomYear] = useState(defaultCustomYear);
   const { state, onSubmit, pending, formKey } = useFormAction(saveMember, {
     successHref: "/admin/team",
     onClear: () => {
       setPosition(defaultPosition);
       setCustomPosition(defaultCustom);
+      setYear(defaultYear);
+      setCustomYear(defaultCustomYear);
     },
     version: member?.updatedAt,
   });
@@ -54,7 +60,17 @@ export function MemberForm({
             </Select>
           </Field>
           <Field label="Position" name="position" required error={e.position}>
-            <Select name="position" value={position} onChange={(ev) => setPosition(ev.target.value as TeamPosition)} error={e.position}>
+            <Select
+              name="position"
+              value={position}
+              onChange={(ev) => {
+                const next = ev.target.value as TeamPosition;
+                setPosition(next);
+                // Committee seats are for 1st–3rd year students only.
+                if (next === "committee_member" && (year === "4" || year === String(OTHER_YEAR))) setYear("");
+              }}
+              error={e.position}
+            >
               <option value="" disabled>Select position</option>
               <optgroup label="Executive Committee">
                 {EXECUTIVE_POSITIONS.map((p) => (
@@ -66,9 +82,8 @@ export function MemberForm({
               <optgroup label="Committee">
                 <option value="committee_member">Committee Member</option>
               </optgroup>
-              <optgroup label="Other">
-                <option value="other">Other (type a position)</option>
-              </optgroup>
+              {/* Only for members saved with a typed-in position before it was retired. */}
+              {member?.position === "other" && <option value="other">Custom position</option>}
             </Select>
           </Field>
           <Field
@@ -78,21 +93,44 @@ export function MemberForm({
             error={e.academicYear}
             hint={committee ? "Each year has 4 committee seats." : undefined}
           >
-            <Select name="academicYear" defaultValue={String(member?.academicYear ?? 1)} error={e.academicYear} hasHint={committee}>
+            <Select name="academicYear" value={year} onChange={(ev) => setYear(ev.target.value)} error={e.academicYear} hasHint={committee}>
               <option value="" disabled>Select academic year</option>
               <option value="1">1st Year</option>
               <option value="2">2nd Year</option>
               <option value="3">3rd Year</option>
               {!committee && <option value="4">4th Year</option>}
+              {!committee && <option value={OTHER_YEAR}>Other (e.g. Lecturer)</option>}
             </Select>
           </Field>
+          {year === String(OTHER_YEAR) && (
+            <Field
+              label="Please specify"
+              name="customYear"
+              required
+              error={e.customYear}
+              hint={`Shown instead of the academic year. ${customYear.length}/${CUSTOM_YEAR_MAX_LENGTH} characters`}
+              className="sm:col-span-3"
+            >
+              <Input
+                name="customYear"
+                value={customYear}
+                onChange={(ev) => setCustomYear(ev.target.value)}
+                required
+                maxLength={CUSTOM_YEAR_MAX_LENGTH}
+                placeholder="e.g. Senior Lecturer"
+                autoFocus={!member?.customYear}
+                error={e.customYear}
+                hasHint
+              />
+            </Field>
+          )}
           {position === "other" && (
             <Field
               label="Position title"
               name="customPosition"
               required
               error={e.customPosition}
-              hint={`Shown on the Team page with the Executive Committee. ${customPosition.length}/${CUSTOM_POSITION_MAX_LENGTH} characters`}
+              hint={`${customPosition.length}/${CUSTOM_POSITION_MAX_LENGTH} characters`}
               className="sm:col-span-3"
             >
               <Input
@@ -101,8 +139,6 @@ export function MemberForm({
                 onChange={(ev) => setCustomPosition(ev.target.value)}
                 required
                 maxLength={CUSTOM_POSITION_MAX_LENGTH}
-                placeholder="e.g. Media Coordinator"
-                autoFocus={!member?.customPosition}
                 error={e.customPosition}
                 hasHint
               />
