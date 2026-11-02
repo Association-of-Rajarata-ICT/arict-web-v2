@@ -1,0 +1,34 @@
+name: Feature request
+description: Suggest an improvement that supports the ARICT community.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Explain who is affected and why this matters.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the behaviour or experience you would like to see.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe other approaches or workarounds you considered.
+    validations:
+      required: false
+  - type: textarea
+    id: accessibility
+    attributes:
+      label: Accessibility considerations
+      description: Explain any accessibility needs or impacts of this proposal.
+    validations:
+      required: false

@@ -6,6 +6,16 @@ Production: **https://arict.lk**
 
 It is a full web application: a public site (Events, Projects, Team, About, Contact, Join), public project submissions with moderation, membership applications, an admin dashboard with role-based access, PostgreSQL storage, image uploads to Cloudinary, and a Contact Us form delivered by EmailJS.
 
+ARICT exists to help students build practical technology skills, collaborate on meaningful projects, discover opportunities, and grow as leaders. This repository contains the production website that supports those goals by connecting the community with its events, projects, teams, and membership opportunities.
+
+## Community
+
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Contributing Guidelines](CONTRIBUTING.md)
+- [Security Policy](SECURITY.md)
+- [Accessibility Statement](ACCESSIBILITY.md)
+- [License](LICENSE)
+
 ---
 
 ## Contents
