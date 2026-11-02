@@ -48,7 +48,8 @@ export const LEADERSHIP_POSITIONS: TeamPosition[] = [
   "senior_treasurer",
 ];
 
-export const COMMITTEE_YEARS = [1, 2, 3] as const;
+/** Committee years in display order: senior students first. */
+export const COMMITTEE_YEARS = [3, 2, 1] as const;
 export const COMMITTEE_LIMIT_PER_YEAR = 4;
 
 export const ACADEMIC_YEAR_LABELS: Record<number, string> = {
@@ -81,9 +82,9 @@ export function isSingleHolderPosition(position: TeamPosition) {
 export const TEAM_SECTIONS = [
   { id: "leadership", label: "Leadership" },
   { id: "executive", label: "Executive Committee" },
-  { id: "year-1", label: "1st Year Committee Members" },
-  { id: "year-2", label: "2nd Year Committee Members" },
   { id: "year-3", label: "3rd Year Committee Members" },
+  { id: "year-2", label: "2nd Year Committee Members" },
+  { id: "year-1", label: "1st Year Committee Members" },
 ] as const;
 
 export type TeamSectionId = (typeof TEAM_SECTIONS)[number]["id"];
