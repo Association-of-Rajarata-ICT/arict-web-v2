@@ -1,1 +1,0 @@
-export const FORM_NOTIFICATION_DURATION_MS = 2 * 60 * 1000;
