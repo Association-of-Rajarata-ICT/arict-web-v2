@@ -31,29 +31,36 @@ export function AnimatedCounter({ value, suffix = "", className }: { value: numb
   const inView = useInView(ref, { once: true, margin: "0px 0px -15% 0px" });
   const reduce = useReducedMotion();
   const [display, setDisplay] = useState(value);
-  const started = useRef(false);
+  // After the count-up finishes, always show the real number.
+  const [finished, setFinished] = useState(false);
 
   // After hydration, reset off-screen counters to zero so they can count up when revealed.
+  // Next.js keeps visited pages mounted and re-runs effects when you return, so this must
+  // not run again once the count-up is done, or the counter would be left at zero.
   useEffect(() => {
-    if (reduce || !ref.current) return;
+    if (reduce || finished || !ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     if (rect.top > window.innerHeight) setDisplay(0);
-  }, [reduce]);
+  }, [reduce, finished]);
 
   useEffect(() => {
-    if (!inView || reduce || started.current) return;
-    started.current = true;
+    if (!inView || reduce || finished) return;
     const controls = animate(0, value, {
       duration: Math.min(2, 0.8 + value / 800),
       ease: [0.16, 1, 0.3, 1],
       onUpdate: (v) => setDisplay(Math.round(v)),
+      onComplete: () => setFinished(true),
     });
-    return () => controls.stop();
-  }, [inView, reduce, value]);
+    // Leaving the page mid-count: stop and show the real number (it counts up again on return).
+    return () => {
+      controls.stop();
+      setDisplay(value);
+    };
+  }, [inView, reduce, value, finished]);
 
   return (
     <span ref={ref} className={cn("tabular-nums", className)}>
-      {display.toLocaleString("en-US")}
+      {(finished ? value : display).toLocaleString("en-US")}
       {suffix}
     </span>
   );
