@@ -2,16 +2,20 @@
  * Creates (or resets) a Super Admin account without touching any other data.
  * Safe to run against production.
  *
- *   SEED_ADMIN_EMAIL=you@arict.lk SEED_ADMIN_PASSWORD='a-long-password' npm run db:create-admin
+ * Reads SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD from the env file:
+ *
+ *   npm run db:create-admin         # uses .env
+ *   npm run db:create-admin:prod    # uses .env.production
  */
-import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "../lib/db/schema";
+import { loadEnv } from "./load-env";
 
 async function main() {
+  loadEnv();
   const url = process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL;
   const email = process.env.SEED_ADMIN_EMAIL?.trim().toLowerCase();
   const password = process.env.SEED_ADMIN_PASSWORD;

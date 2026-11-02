@@ -12,11 +12,13 @@
     "test": "tsx --test tests/*.test.tsx",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts",
+    "db:migrate:prod": "tsx scripts/migrate.ts --env .env.production",
     "db:seed": "tsx scripts/seed.ts",
     "db:studio": "drizzle-kit studio",
     "assets": "node scripts/generate-assets.mjs",
     "assets:og": "node scripts/generate-og.mjs",
-    "db:create-admin": "tsx scripts/create-admin.ts"
+    "db:create-admin": "tsx scripts/create-admin.ts",
+    "db:create-admin:prod": "tsx scripts/create-admin.ts --env .env.production"
   },
   "dependencies": {
     "@emailjs/browser": "^5.0.3",
