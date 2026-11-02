@@ -20,7 +20,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 export function EventForm({ event, categories }: { event?: Event & { images: EventImage[] }; categories: string[] }) {
-  const { state, onSubmit, pending } = useFormAction(saveEvent);
+  const { state, onSubmit, pending } = useFormAction(saveEvent, { successHref: "/admin/events" });
   const [uploading, setUploading] = useState(0);
   const e = state.fieldErrors ?? {};
   const onBusy = (b: boolean) => setUploading((n) => Math.max(0, n + (b ? 1 : -1)));

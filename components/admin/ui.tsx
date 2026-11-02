@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ChevronLeft, Search } from "lucide-react";
+import { AutoDismiss } from "@/components/ui/auto-dismiss";
 import { cn } from "@/lib/utils";
 
 export function AdminHeader({
@@ -158,16 +159,19 @@ export function Notice({ searchParams }: { searchParams: Record<string, string |
   const saved = searchParams.saved;
   const denied = searchParams.denied;
   if (!saved && !denied) return null;
+  const message = denied ? "You don't have permission to open that page." : typeof saved === "string" && saved.length > 1 ? saved : "Changes saved.";
   return (
-    <div
-      role="status"
-      className={cn(
-        "mb-6 rounded-xl border px-4 py-3 text-sm",
-        denied ? "border-amber-200 bg-amber-50 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/25 text-amber-800" : "border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/25 text-emerald-800",
-      )}
-    >
-      {denied ? "You don't have permission to open that page." : typeof saved === "string" && saved.length > 1 ? saved : "Changes saved."}
-    </div>
+    <AutoDismiss key={message}>
+      <div
+        role="status"
+        className={cn(
+          "mb-6 rounded-xl border px-4 py-3 text-sm",
+          denied ? "border-amber-200 bg-amber-50 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/25 text-amber-800" : "border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/25 text-emerald-800",
+        )}
+      >
+        {message}
+      </div>
+    </AutoDismiss>
   );
 }
 

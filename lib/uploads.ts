@@ -24,27 +24,15 @@ export function validateImageFile(file: { name: string; size: number; type: stri
   return null;
 }
 
-const BLOB_HOST = /^[a-z0-9-]+\.public\.blob\.vercel-storage\.com$/i;
-
-/** Images we are willing to render: our Blob store, local static/uploaded files, and seed photos. */
+/** Images we are willing to render: Cloudinary uploads, local static/uploaded files, and seed photos. */
 export function isAllowedImageUrl(value: string) {
   if (value.startsWith("/") && !value.startsWith("//")) return !value.includes("..");
   try {
     const url = new URL(value);
     if (url.protocol !== "https:") return false;
-    return BLOB_HOST.test(url.hostname) || url.hostname === "images.unsplash.com";
+    return url.hostname === "res.cloudinary.com" || url.hostname === "images.unsplash.com";
   } catch {
     return false;
   }
 }
 
-/** Public submissions may only reference files uploaded through our submission upload flow. */
-export function isSubmissionUploadUrl(value: string) {
-  if (value.startsWith("/uploads/submissions/")) return !value.includes("..");
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" && BLOB_HOST.test(url.hostname) && url.pathname.startsWith("/submissions/");
-  } catch {
-    return false;
-  }
-}

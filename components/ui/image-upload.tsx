@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { ImagePlus, Loader2, X } from "lucide-react";
 import { prepareImage } from "@/lib/image-compress";
 import { uploadImage } from "@/lib/upload-client";
@@ -43,6 +43,16 @@ export function ImageUpload({
   );
   const [message, setMessage] = useState<string | null>(null);
   const remaining = max - items.length;
+
+  useEffect(() => {
+    const form = inputRef.current?.form;
+    const clear = () => {
+      setItems([]);
+      setMessage(null);
+    };
+    form?.addEventListener("reset", clear);
+    return () => form?.removeEventListener("reset", clear);
+  }, []);
 
   const update = (key: string, patch: Partial<Item>) =>
     setItems((prev) => prev.map((it) => (it.key === key ? { ...it, ...patch } : it)));

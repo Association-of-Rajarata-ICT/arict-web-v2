@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox, Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { useFormAction } from "@/components/ui/use-form-action";
+import { FormComplete } from "@/components/ui/form-complete";
 import { Card } from "./ui";
 
 export function MemberForm({
@@ -19,14 +20,14 @@ export function MemberForm({
   terms: Pick<TeamTerm, "id" | "title" | "isCurrent">[];
   defaultTermId?: string;
 }) {
-  const { state, onSubmit, pending } = useFormAction(saveMember);
-  const [position, setPosition] = useState<TeamPosition>(member?.position ?? "committee_member");
+  const { state, onSubmit, pending } = useFormAction(saveMember, { successHref: "/admin/team" });
+  const [position, setPosition] = useState<TeamPosition | "">(member?.position ?? "committee_member");
   const [uploading, setUploading] = useState(false);
   const e = state.fieldErrors ?? {};
   const committee = position === "committee_member";
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-6">
+    <form onSubmit={onSubmit} onReset={() => setPosition("")} noValidate className="space-y-6">
       {member && <input type="hidden" name="id" value={member.id} />}
       {state.message && <FormMessage tone={state.ok ? "success" : "error"}>{state.message}</FormMessage>}
 
@@ -44,6 +45,7 @@ export function MemberForm({
           </Field>
           <Field label="Position" name="position" required error={e.position}>
             <Select name="position" value={position} onChange={(ev) => setPosition(ev.target.value as TeamPosition)} error={e.position}>
+              <option value="" disabled>Select position</option>
               <optgroup label="Executive Committee">
                 {EXECUTIVE_POSITIONS.map((p) => (
                   <option key={p} value={p}>
@@ -64,6 +66,7 @@ export function MemberForm({
             hint={committee ? "Each year has 4 committee seats." : undefined}
           >
             <Select name="academicYear" defaultValue={String(member?.academicYear ?? 1)} error={e.academicYear} hasHint={committee}>
+              <option value="" disabled>Select academic year</option>
               <option value="1">1st Year</option>
               <option value="2">2nd Year</option>
               <option value="3">3rd Year</option>
@@ -132,8 +135,12 @@ export function MemberForm({
 }
 
 export function TermForm({ term }: { term?: TeamTerm }) {
-  const { state, onSubmit, pending } = useFormAction(saveTerm);
+  const { state, onSubmit, pending, reset } = useFormAction(saveTerm, {
+    successHref: term ? "/admin/team/terms" : undefined,
+    refreshOnSuccess: !term,
+  });
   const e = state.fieldErrors ?? {};
+  if (state.ok) return <FormComplete message={state.message} reopenLabel={term ? "Edit term" : "Add another term"} onReopen={reset} />;
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-5">
       {term && <input type="hidden" name="id" value={term.id} />}

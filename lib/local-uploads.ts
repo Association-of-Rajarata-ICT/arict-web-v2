@@ -2,14 +2,17 @@ import "server-only";
 import path from "node:path";
 
 /**
- * Local-disk storage used only when NEXT_PUBLIC_UPLOAD_MODE=local and not on Vercel.
+ * Local-disk storage for development only: used when Cloudinary isn't configured,
+ * LOCAL_UPLOADS=true is set, and the app isn't running on Vercel.
  * Files live outside /public so they are served by app/uploads/[...path]/route.ts
  * (Next.js only serves /public files that existed at build time).
  */
 export const LOCAL_UPLOAD_DIR = path.join(/*turbopackIgnore: true*/ process.cwd(), ".data", "uploads");
 
 export function localUploadsEnabled() {
-  return process.env.NEXT_PUBLIC_UPLOAD_MODE === "local" && !process.env.VERCEL;
+  // NEXT_PUBLIC_UPLOAD_MODE=local is the older name for the same switch.
+  const optedIn = process.env.LOCAL_UPLOADS === "true" || process.env.NEXT_PUBLIC_UPLOAD_MODE === "local";
+  return optedIn && !process.env.VERCEL;
 }
 
 /** Checks magic bytes so a renamed non-image can't slip through. */

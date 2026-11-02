@@ -1,58 +1,69 @@
-import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
+import { randomUUID } from "node:crypto";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { NextResponse } from "next/server";
-import { getAdmin, can } from "@/lib/auth/session";
+import { can, getAdmin } from "@/lib/auth/session";
+import { cloudinaryConfig, uploadToCloudinary } from "@/lib/cloudinary";
+import { EXT_FOR_TYPE, LOCAL_UPLOAD_DIR, localUploadsEnabled, sniffImageType } from "@/lib/local-uploads";
 import { clientKey, rateLimit } from "@/lib/rate-limit";
-import { ALLOWED_IMAGE_EXTENSIONS, ALLOWED_IMAGE_TYPES, MAX_IMAGE_BYTES, fileExtension } from "@/lib/uploads";
+import { IMAGE_SIZE_ERROR, IMAGE_TYPE_ERROR, MAX_IMAGE_BYTES, validateImageFile } from "@/lib/uploads";
 
 /**
- * Issues short-lived client upload tokens for Vercel Blob.
- * The token itself enforces the 4 MB limit and allowed image types, so files
- * never pass through (or depend on) our function's request body limit.
+ * Receives one image from the browser, validates it on the server (permission
+ * or rate limit, 4 MB limit, real file type from its magic bytes) and stores it:
+ *  - in Cloudinary when CLOUDINARY_* is configured (production), or
+ *  - on local disk when LOCAL_UPLOADS=true and not on Vercel (development only).
+ * Returns { url } for the form to save.
  */
 export async function POST(request: Request) {
-  const body = (await request.json()) as HandleUploadBody;
-
-  try {
-    const result = await handleUpload({
-      body,
-      request,
-      onBeforeGenerateToken: async (pathname, clientPayload) => {
-        let scope: unknown;
-        try {
-          scope = (JSON.parse(clientPayload ?? "{}") as { scope?: unknown }).scope;
-        } catch {
-          throw new Error("Invalid upload request.");
-        }
-
-        if (!(ALLOWED_IMAGE_EXTENSIONS as readonly string[]).includes(fileExtension(pathname))) {
-          throw new Error("File type not allowed.");
-        }
-
-        if (scope === "admin") {
-          const admin = await getAdmin();
-          if (!can(admin, "content")) throw new Error("Not authorised.");
-          if (!pathname.startsWith("media/")) throw new Error("Invalid upload path.");
-        } else if (scope === "submission") {
-          if (!pathname.startsWith("submissions/")) throw new Error("Invalid upload path.");
-          const ok = await rateLimit(`upload:${clientKey(request.headers)}`, 30, 60 * 60);
-          if (!ok) throw new Error("Too many uploads. Please try again later.");
-        } else {
-          throw new Error("Invalid upload request.");
-        }
-
-        return {
-          allowedContentTypes: [...ALLOWED_IMAGE_TYPES],
-          maximumSizeInBytes: MAX_IMAGE_BYTES,
-          addRandomSuffix: true,
-          cacheControlMaxAge: 60 * 60 * 24 * 365,
-        };
-      },
-      // No onUploadCompleted callback: the form that triggered the upload stores the URL,
-      // and omitting it lets uploads work from localhost (Vercel can't call back to it).
-    });
-    return NextResponse.json(result);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Upload failed.";
-    return NextResponse.json({ error: message }, { status: 400 });
+  const useCloudinary = cloudinaryConfig() !== null;
+  if (!useCloudinary && !localUploadsEnabled()) {
+    return NextResponse.json(
+      { error: "Image storage isn't set up yet. Add the Cloudinary keys to the environment variables." },
+      { status: 503 },
+    );
   }
+
+  // Reject oversized bodies before reading them (4 MB file + a little multipart overhead).
+  const length = Number(request.headers.get("content-length") ?? 0);
+  if (length > MAX_IMAGE_BYTES + 64 * 1024) return NextResponse.json({ error: IMAGE_SIZE_ERROR }, { status: 413 });
+
+  const form = await request.formData().catch(() => null);
+  const file = form?.get("file");
+  const scope = form?.get("scope");
+  if (!(file instanceof File)) return NextResponse.json({ error: "No file received." }, { status: 400 });
+
+  if (scope === "admin") {
+    if (!can(await getAdmin(), "content")) return NextResponse.json({ error: "Not authorised." }, { status: 401 });
+  } else if (scope === "submission") {
+    if (!(await rateLimit(`upload:${clientKey(request.headers)}`, 30, 60 * 60))) {
+      return NextResponse.json({ error: "Too many uploads. Please try again later." }, { status: 429 });
+    }
+  } else {
+    return NextResponse.json({ error: "Invalid upload request." }, { status: 400 });
+  }
+
+  const invalid = validateImageFile(file);
+  if (invalid) return NextResponse.json({ error: invalid }, { status: 400 });
+
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  if (bytes.byteLength > MAX_IMAGE_BYTES) return NextResponse.json({ error: IMAGE_SIZE_ERROR }, { status: 413 });
+  const type = sniffImageType(bytes);
+  if (!type) return NextResponse.json({ error: IMAGE_TYPE_ERROR }, { status: 400 });
+
+  const folder = scope === "submission" ? "submissions" : "media";
+
+  if (useCloudinary) {
+    try {
+      return NextResponse.json({ url: await uploadToCloudinary(bytes, type, folder) });
+    } catch (error) {
+      console.error(error);
+      return NextResponse.json({ error: "Upload failed. Please try again." }, { status: 502 });
+    }
+  }
+
+  const name = `${randomUUID()}.${EXT_FOR_TYPE[type]}`;
+  await mkdir(path.join(/*turbopackIgnore: true*/ LOCAL_UPLOAD_DIR, folder), { recursive: true });
+  await writeFile(path.join(/*turbopackIgnore: true*/ LOCAL_UPLOAD_DIR, folder, name), bytes);
+  return NextResponse.json({ url: `/uploads/${folder}/${name}` });
 }

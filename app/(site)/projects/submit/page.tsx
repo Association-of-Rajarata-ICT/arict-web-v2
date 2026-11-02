@@ -13,7 +13,7 @@ export const metadata = pageMetadata({
 
 async function SubmitFormSection() {
   "use cache";
-  cacheLife("days");
+  cacheLife("year");
   return <SubmissionForm currentYear={new Date().getFullYear()} />;
 }
 

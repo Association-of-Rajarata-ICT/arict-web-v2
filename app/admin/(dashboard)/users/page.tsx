@@ -20,7 +20,7 @@ export default async function UsersPage() {
     <>
       <AdminHeader
         title="Admin users"
-        description="Super Admins manage accounts. Admins manage content, applications and settings. Editors manage Events, Projects and Team."
+        description="Super Admins manage accounts and site settings. Admins manage content and applications. Editors manage Events, Projects, Team, and Ads & News."
       />
       <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
         <Table>
@@ -46,13 +46,14 @@ export default async function UsersPage() {
                     {ROLES.map((r) =>
                       r === u.role ? (
                         <StatusBadge key={r} status="current" label={ROLE_LABELS[r]} />
-                      ) : (
+                      ) : u.id !== me.id ? (
                         <ActionButton key={r} action={updateUser} fields={{ id: u.id, role: r }} confirm={`Change ${u.name}'s role to ${ROLE_LABELS[r]}?`}>
                           {ROLE_LABELS[r]}
                         </ActionButton>
-                      ),
+                      ) : null,
                     )}
                   </div>
+                  {u.id === me.id && <p className="mt-1 text-xs text-muted">You can&apos;t change your own role.</p>}
                 </Td>
                 <Td>
                   <StatusBadge status={u.active ? "accepted" : "archived"} label={u.active ? "Active" : "Deactivated"} />

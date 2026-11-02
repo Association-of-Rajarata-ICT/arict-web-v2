@@ -4,7 +4,7 @@ The official website of **ARICT — Association of Rajarata Information & Commun
 
 Production: **https://arict.lk**
 
-It is a full web application: a public site (Events, Projects, Team, About, Contact, Join), public project submissions with moderation, membership applications, an admin dashboard with role-based access, PostgreSQL storage, image uploads to Vercel Blob, and a Contact Us form delivered by EmailJS.
+It is a full web application: a public site (Events, Projects, Team, About, Contact, Join), public project submissions with moderation, membership applications, an admin dashboard with role-based access, PostgreSQL storage, image uploads to Cloudinary, and a Contact Us form delivered by EmailJS.
 
 ---
 
@@ -38,7 +38,7 @@ It is a full web application: a public site (Events, Projects, Team, About, Cont
 | Motion | Framer Motion, Lenis smooth scrolling (disabled for `prefers-reduced-motion`) |
 | Database | PostgreSQL (Neon via Vercel Marketplace) with Drizzle ORM and SQL migrations |
 | Auth | Auth.js (NextAuth v5), email + password credentials, JWT sessions, roles checked server-side |
-| Media | Vercel Blob (direct client uploads with a signed 4 MB / image-only policy) |
+| Media | Cloudinary (server-signed uploads; only the image URL is stored in Postgres) |
 | Validation | Zod (shared by client and server) |
 | Contact form | EmailJS (`@emailjs/browser`) |
 
@@ -57,7 +57,7 @@ app/
     (dashboard)/          Protected admin area (events, projects, project-submissions,
                           team, team/terms, join-applications, settings, users)
   api/auth/[...nextauth]  Auth.js handlers
-  api/upload/             Vercel Blob client-upload token endpoint (+ local dev fallback)
+  api/upload/             Validates images and uploads them to Cloudinary (local-disk fallback in dev)
   sitemap.ts robots.ts manifest.ts
   favicon.ico icon.png apple-icon.png
   not-found.tsx error.tsx global-error.tsx
@@ -95,7 +95,7 @@ npm run dev                   # http://localhost:3000
 
 Sign in at **/admin/login** with `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`.
 
-**Uploads without Vercel Blob:** set `NEXT_PUBLIC_UPLOAD_MODE=local` in `.env`. Images are then saved to `.data/uploads` (git-ignored) and served from `/uploads/…`. This mode is disabled automatically on Vercel.
+**Uploads without Cloudinary:** set `LOCAL_UPLOADS=true` in `.env`. Images are then saved to `.data/uploads` (git-ignored) and served from `/uploads/…`. This mode is disabled automatically on Vercel, and Cloudinary takes priority whenever its keys are set. Don't use it while `.env` points at the production database: the links won't work on the live site.
 
 ## Environment variables
 
@@ -107,12 +107,12 @@ See [`.env.example`](.env.example). Summary:
 | `DATABASE_URL_UNPOOLED` | recommended | Direct connection used for migrations |
 | `AUTH_SECRET` | yes | Random 32+ byte secret (`npx auth secret`) |
 | `NEXT_PUBLIC_SITE_URL` | yes | `https://arict.lk` (canonical URLs, sitemap, Open Graph) |
-| `BLOB_READ_WRITE_TOKEN` | yes (prod) | Set when a Blob store is connected to the Vercel project |
+| `CLOUDINARY_URL` | yes | `cloudinary://<key>:<secret>@<cloud_name>` from Cloudinary → Settings → API Keys (or the three `CLOUDINARY_CLOUD_NAME` / `_API_KEY` / `_API_SECRET` variables) |
 | `NEXT_PUBLIC_EMAILJS_SERVICE_ID` | yes | EmailJS service ID |
 | `NEXT_PUBLIC_EMAILJS_TEMPLATE_ID` | yes | EmailJS template ID |
 | `NEXT_PUBLIC_EMAILJS_PUBLIC_KEY` | yes | EmailJS public key (browser-safe by design) |
 | `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` | for scripts | Used by `db:seed` and `db:create-admin` |
-| `NEXT_PUBLIC_UPLOAD_MODE` | dev only | `local` to store uploads on disk |
+| `LOCAL_UPLOADS` | dev only | `true` to store uploads on disk when Cloudinary isn't configured |
 
 Never commit real values. `.env*` is git-ignored except `.env.example`.
 
@@ -139,15 +139,24 @@ Database rules:
 
 | Role | Can manage |
 | --- | --- |
-| **Super Admin** | Everything, including admin accounts (`/admin/users`) |
-| **Admin** | Events, Projects, Team, Project submissions, Join applications, Site settings |
-| **Editor** | Events, Projects, Team |
+| **Super Admin** | Everything, including admin accounts (`/admin/users`) and Site settings (`/admin/settings`) |
+| **Admin** | Events, Projects, Team, Ads & News, Project submissions, Join applications |
+| **Editor** | Events, Projects, Team, Ads & News |
 
 Deactivating a user or changing their role takes effect on their next request.
+
+Super Admins cannot change their own role. Site Settings is visible and accessible only to Super Admins.
+
+All three roles can manage **Ads & News** at `/admin/announcements`: create news or advertisements with a message, optional image, and optional link button; preview drafts; publish, unpublish, reorder, or delete items. Only published items reach the visitor popup. Lower display-order numbers appear first. Dismissing the popup hides that set for the current browser session; new or updated announcements can appear again. Previews do not affect visitor dismissal preferences. Apply database migrations with `npm run db:migrate` before running this version.
+
+Image announcements use a borderless overlay at the full browser viewport height, preserving the image proportions. Images matching the viewport proportions fill the screen; wider images can be scrolled horizontally. Clicking the image or background closes the overlay; Escape and a close button also work. Optional links and previous/next controls remain available. Text-only announcements use the message popup; image announcements retain their title and message as accessible descriptions.
+
+Successful submissions clear editable fields and close the submitted form. Event, project, member, announcement, and review pages return to their corresponding lists. Inline account, password, term, and Site Settings forms collapse and can be reopened explicitly; saving a settings section leaves other sections available. Public contact, membership, and project forms close to a confirmation. Submission notifications disappear automatically after two minutes without reopening the form. Failed submissions retain entered values and remain open for corrections.
 
 Admin sections:
 
 - **Dashboard:** totals, upcoming events, published projects, pending submissions, current members, past terms, pending applications.
+- **Ads & News:** announcements shown in a dismissible popup across the public website, with draft previews and publishing controls.
 - **Events:** create, edit, publish/unpublish, feature, archive, delete, cover and photos, registration link, status.
 - **Projects:** create, edit, publish/unpublish, feature, archive, delete, screenshots, technologies, contributors, GitHub and live demo links.
 - **Project Submissions:** search, filter, review, request changes, reject, and accept & convert into a project.
@@ -177,9 +186,10 @@ Each member belongs to a term. When a new term becomes current, the old one appe
 All uploads use the same rules: **4 MB or less**, JPG/JPEG/PNG/WebP/AVIF only. The error message is "Image size must be 4 MB or less."
 
 - **Browser:** file size, extension and MIME type are checked before uploading (`lib/uploads.ts`).
-- **Upload policy:** `/api/upload` issues a short-lived Vercel Blob client token with `maximumSizeInBytes = 4 MB` and an image-only `allowedContentTypes`, so the storage service itself enforces the limit. Admin uploads require an authenticated editor. Public submission uploads are rate-limited per IP and confined to `submissions/`.
-- **Server:** when a submission is saved, every image URL must come from our submission upload path, and its size and content type are re-checked with Blob `head()`.
-- **Local dev endpoint:** also checks the file's magic bytes.
+- **Automatic resizing:** large photos (e.g. 5–15 MB from a phone) are shrunk in the browser to at most 2400px WebP before upload, so they fit the limit (`lib/image-compress.ts`).
+- **Server (`/api/upload`):** admin uploads require an authenticated editor; public submission uploads are rate-limited per IP. The server re-checks the 4 MB limit and the real file type from its magic bytes, then uploads to Cloudinary with a signed request. The API secret never reaches the browser.
+- **Storage:** files go to Cloudinary under `arict/media/` (admin) and `arict/submissions/` (public), with random names. Only the `https://res.cloudinary.com/...` URL is saved in Postgres.
+- **Saving a submission:** every image URL must point at *our* Cloudinary account's `arict/submissions/` folder, and its type and size are re-checked.
 
 ## EmailJS setup (Contact Us form)
 
@@ -229,13 +239,13 @@ Spam protection on the form: a hidden honeypot field, a minimum fill time, a 60-
 
 ## Deploying to Vercel
 
-Git repository → Vercel project → Neon Postgres → environment variables → Vercel Blob → EmailJS variables → production deployment → custom domain.
+Git repository → Vercel project → Neon Postgres → Cloudinary → environment variables → EmailJS variables → production deployment → custom domain.
 
 1. Push this repository to GitHub, GitLab or Bitbucket.
 2. In Vercel: **Add New → Project** and import the repository. The framework preset is Next.js; the build command comes from `vercel.json`.
 3. **Storage → Create Database → Neon (Postgres)** and connect it to the project. This sets `DATABASE_URL` and `DATABASE_URL_UNPOOLED`. Choose the **Singapore (ap-southeast-1)** region; `vercel.json` pins functions to `sin1` next to it.
-4. **Storage → Create → Blob** and connect it to the project. This sets `BLOB_READ_WRITE_TOKEN`.
-5. Under **Settings → Environment Variables**, add `AUTH_SECRET`, `NEXT_PUBLIC_SITE_URL=https://arict.lk` and the three `NEXT_PUBLIC_EMAILJS_*` values. **Do not** add `NEXT_PUBLIC_UPLOAD_MODE` or the `SEED_ADMIN_*` values; they are for local use only.
+4. Create a free account at https://cloudinary.com. In **Settings → API Keys**, copy the **API environment variable** (`cloudinary://…`).
+5. Under **Settings → Environment Variables**, add `CLOUDINARY_URL`, `AUTH_SECRET`, `NEXT_PUBLIC_SITE_URL=https://arict.lk` and the three `NEXT_PUBLIC_EMAILJS_*` values. If you created the database on neon.tech instead of through Vercel, also add `DATABASE_URL` (pooled) and `DATABASE_URL_UNPOOLED` (direct). **Do not** add `LOCAL_UPLOADS`, `NEXT_PUBLIC_UPLOAD_MODE` or the `SEED_ADMIN_*` values; they are for local use only.
 6. Deploy. Migrations run automatically before the build.
 7. Create the first admin from your machine using the production `DATABASE_URL`:
    ```bash
@@ -290,7 +300,7 @@ What's implemented:
 
 ## Favicon and site identity files
 
-A simplified ARICT mark (white geometric "A" with a brand-red base bar on black) is generated from `scripts/generate-assets.mjs`:
+The site icons use the official ARICT logo (with its tagline) centred on a white square. They are generated from `public/brand/arict-logo-source.png` by `scripts/generate-assets.mjs`:
 
 | File | Purpose |
 | --- | --- |

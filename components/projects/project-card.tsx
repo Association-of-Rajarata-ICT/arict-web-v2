@@ -42,7 +42,7 @@ export function ProjectCard({
           {project.category} · {project.year}
         </p>
         <Heading className="mt-2 text-xl leading-snug font-semibold tracking-tight text-ink">
-          <Link href={`/projects/${project.slug}`} className="after:absolute after:inset-0 after:content-['']">
+          <Link href={`/projects/${project.slug}`} prefetch={true} className="after:absolute after:inset-0 after:content-['']">
             {project.title}
           </Link>
         </Heading>

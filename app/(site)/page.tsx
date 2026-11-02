@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cacheLife } from "next/cache";
 import { Hero } from "@/components/home/hero";
 import {
   AboutPreview,
@@ -20,6 +21,7 @@ import { SITE } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   "use cache";
+  cacheLife("content");
   const { general } = await getSiteSettings();
   return pageMetadata({
     title: `${SITE.name} — ${general.fullName}`,

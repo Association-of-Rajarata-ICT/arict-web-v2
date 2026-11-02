@@ -44,6 +44,8 @@ export async function updateUser(_prev: ActionState, formData: FormData): Promis
     if (!parsed.success) return fail("Invalid request.");
     const { id, role, active } = parsed.data;
 
+    if (id === me.id && role && role !== me.role) return fail("You can't change your own role.");
+
     const [target] = await db.select({ role: users.role, active: users.active }).from(users).where(eq(users.id, id));
     if (!target) return fail("User not found.");
     const losingSuperAdmin = target.role === "super_admin" && target.active && ((role && role !== "super_admin") || active === "false");

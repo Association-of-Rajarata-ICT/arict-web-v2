@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { slugify } from "@/lib/utils";
 import { Field, Input } from "@/components/ui/form";
 
@@ -21,10 +21,22 @@ export function TitleSlugFields({
   const [title, setTitle] = useState(defaultTitle);
   const [slug, setSlug] = useState(defaultSlug);
   const [touched, setTouched] = useState(Boolean(defaultSlug));
+  const fieldsRef = useRef<HTMLDivElement>(null);
   const value = touched ? slug : slugify(title);
 
+  useEffect(() => {
+    const form = fieldsRef.current?.closest("form");
+    const clear = () => {
+      setTitle("");
+      setSlug("");
+      setTouched(false);
+    };
+    form?.addEventListener("reset", clear);
+    return () => form?.removeEventListener("reset", clear);
+  }, []);
+
   return (
-    <div className="grid gap-5 sm:grid-cols-2">
+    <div ref={fieldsRef} className="grid gap-5 sm:grid-cols-2">
       <Field label={titleLabel} name="title" required error={errors.title}>
         <Input name="title" value={title} onChange={(e) => setTitle(e.target.value)} required maxLength={160} error={errors.title} />
       </Field>

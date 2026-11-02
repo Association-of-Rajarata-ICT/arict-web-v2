@@ -46,7 +46,7 @@ export function ProjectForm({
   submitLabel?: string;
   showVisibility?: boolean;
 }) {
-  const { state, onSubmit, pending } = useFormAction(action);
+  const { state, onSubmit, pending } = useFormAction(action, { successHref: "/admin/projects" });
   const [uploading, setUploading] = useState(0);
   const e = state.fieldErrors ?? {};
   const onBusy = (b: boolean) => setUploading((n) => Math.max(0, n + (b ? 1 : -1)));

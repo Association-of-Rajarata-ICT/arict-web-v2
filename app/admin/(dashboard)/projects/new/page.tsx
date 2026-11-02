@@ -10,7 +10,7 @@ export const metadata = { title: "New project" };
 
 async function currentYear() {
   "use cache";
-  cacheLife("days");
+  cacheLife("year");
   return new Date().getFullYear();
 }
 

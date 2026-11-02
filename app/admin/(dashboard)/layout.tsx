@@ -7,9 +7,16 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar } from "@/components/ui/misc";
 import { can, requirePage, ROLE_LABELS } from "@/lib/auth/session";
 
+const ROLE_TAGS = {
+  super_admin: "SUPERADMIN",
+  admin: "ADMIN",
+  editor: "EDITOR",
+} as const;
+
 export default async function DashboardLayout({ children }: LayoutProps<"/admin">) {
   const user = await requirePage("content");
-  const allowed: NavKey[] = ["dashboard", "events", "projects", "team", "terms"];
+  const roleTag = ROLE_TAGS[user.role];
+  const allowed: NavKey[] = ["dashboard", "announcements", "events", "projects", "team", "terms"];
   if (can(user, "moderation")) allowed.push("submissions", "join");
   if (can(user, "settings")) allowed.push("settings");
   if (can(user, "users")) allowed.push("users");
@@ -19,9 +26,9 @@ export default async function DashboardLayout({ children }: LayoutProps<"/admin"
       <aside className="hidden border-r border-line bg-surface lg:flex lg:flex-col">
         <div className="sticky top-0 flex h-svh flex-col p-5">
           <div className="flex items-center justify-between">
-            <Link href="/admin" className="flex items-center gap-2 px-2 py-2" aria-label="ARICT Admin dashboard">
+            <Link href="/admin" className="flex flex-col items-start gap-2 px-2 py-2" aria-label={`ARICT ${ROLE_LABELS[user.role]} dashboard`}>
               <Logo className="h-5" />
-              <span className="rounded-md bg-mist px-1.5 py-0.5 text-[10px] font-semibold tracking-wider text-muted uppercase">Admin</span>
+              <span className="rounded-md bg-mist px-1.5 py-0.5 text-[10px] font-semibold tracking-wider text-muted">{roleTag}</span>
             </Link>
             <ThemeToggle />
           </div>
@@ -52,8 +59,9 @@ export default async function DashboardLayout({ children }: LayoutProps<"/admin"
 
       <div className="min-w-0">
         <header className="relative flex h-16 items-center justify-between border-b border-line bg-surface px-4 lg:hidden">
-          <Link href="/admin" aria-label="ARICT Admin dashboard">
+          <Link href="/admin" className="flex flex-col items-start gap-1" aria-label={`ARICT ${ROLE_LABELS[user.role]} dashboard`}>
             <Logo className="h-[18px]" />
+            <span className="rounded-md bg-mist px-1.5 py-0.5 text-[10px] font-semibold tracking-wider text-muted">{roleTag}</span>
           </Link>
           <div className="flex items-center gap-1">
             <ThemeToggle />

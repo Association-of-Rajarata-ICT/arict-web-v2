@@ -16,20 +16,6 @@ const brand = (f) => path.join(root, "public", "brand", f);
 const pub = (f) => path.join(root, "public", f);
 const app = (f) => path.join(root, "app", f);
 
-const BLACK = "#0B0B0B";
-const RED = "#A00000";
-
-// Simplified mark: the geometric ARICT "A" in white with the brand-red base bar, on black.
-const iconSvg = (size, { rounded = true, padding = 0 } = {}) => `
-<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="${rounded ? 112 : 0}" fill="${BLACK}"/>
-  <g transform="translate(${256 * padding} ${256 * padding}) scale(${1 - padding})">
-    <path fill-rule="evenodd" fill="#FFFFFF"
-      d="M100 372 L226 92 L286 92 L412 372 L346 372 L322 318 L190 318 L166 372 Z
-         M212 266 L300 266 L256 166 Z"/>
-    <rect x="100" y="400" width="312" height="34" rx="6" fill="${RED}"/>
-  </g>
-</svg>`;
 
 async function trimmedLogo() {
   const src = brand("arict-logo-source.png");
@@ -74,19 +60,34 @@ async function trimmedLogo() {
   }
 }
 
+// Site icons: the official ARICT logo (with its tagline) centred on a white square.
 async function icons() {
-  const png = (size, opts) => sharp(Buffer.from(iconSvg(size, opts))).resize(size, size).png().toBuffer();
+  const logoSrc = pub("brand/arict-logo.png"); // trimmed by trimmedLogo()
+  const png = async (size, { rounded = true, padding = 0.06 } = {}) => {
+    const logo = await sharp(logoSrc)
+      .resize({ width: Math.round(size * (1 - 2 * padding)) })
+      .toBuffer();
+    const { width = 0, height = 0 } = await sharp(logo).metadata();
+    const radius = rounded ? Math.round(size * 0.22) : 0;
+    const square = Buffer.from(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><rect width="${size}" height="${size}" rx="${radius}" fill="#FFFFFF"/></svg>`,
+    );
+    return sharp(square)
+      .composite([{ input: logo, left: Math.round((size - width) / 2), top: Math.round((size - height) / 2) }])
+      .png()
+      .toBuffer();
+  };
 
   await fs.writeFile(pub("icon-192.png"), await png(192));
   await fs.writeFile(pub("icon-512.png"), await png(512));
-  await fs.writeFile(pub("icon-maskable-512.png"), await png(512, { rounded: false, padding: 0.18 }));
+  // Maskable icons can be cropped to a circle, so keep the logo inside the central safe zone.
+  await fs.writeFile(pub("icon-maskable-512.png"), await png(512, { rounded: false, padding: 0.14 }));
   await fs.writeFile(app("icon.png"), await png(512));
-  await fs.writeFile(app("apple-icon.png"), await png(180, { rounded: false, padding: 0.08 }));
-  await fs.writeFile(pub("brand/arict-mark.svg"), iconSvg(512).trim());
+  await fs.writeFile(app("apple-icon.png"), await png(180, { rounded: false, padding: 0.07 }));
 
   // favicon.ico with PNG-encoded 16/32/48 entries.
   const sizes = [16, 32, 48];
-  const images = await Promise.all(sizes.map((s) => png(s)));
+  const images = await Promise.all(sizes.map((s) => png(s, { padding: 0.03 })));
   const header = Buffer.alloc(6);
   header.writeUInt16LE(0, 0);
   header.writeUInt16LE(1, 2);

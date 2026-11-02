@@ -166,7 +166,7 @@ function FeaturedEvent({ event }: { event: EventCardData }) {
           {event.status === "postponed" && <Pill tone="warning">Postponed</Pill>}
         </div>
         <h3 className="mt-5 text-2xl leading-tight font-semibold tracking-tight text-balance sm:text-3xl">
-          <Link href={`/events/${event.slug}`} className="after:absolute after:inset-0 after:content-['']">
+          <Link href={`/events/${event.slug}`} prefetch={true} className="after:absolute after:inset-0 after:content-['']">
             {event.title}
           </Link>
         </h3>

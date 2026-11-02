@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { useFormAction } from "@/components/ui/use-form-action";
+import { FormComplete } from "@/components/ui/form-complete";
 import { Card } from "./ui";
 
 function SectionForm({ section, children, busy }: { section: SettingsKey; children: (errors: Record<string, string>) => ReactNode; busy?: boolean }) {
-  const { state, onSubmit, pending } = useFormAction(saveSettings);
+  const { state, onSubmit, pending, reset } = useFormAction(saveSettings, { refreshOnSuccess: true });
+  if (state.ok) return <FormComplete message={state.message} reopenLabel="Edit this section" onReopen={reset} />;
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-6">
       <input type="hidden" name="section" value={section} />

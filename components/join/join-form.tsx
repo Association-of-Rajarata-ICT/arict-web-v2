@@ -16,15 +16,19 @@ export function JoinForm() {
   const e = state.fieldErrors ?? {};
 
   useEffect(() => {
-    if (state.at && !state.ok) formRef.current?.querySelector<HTMLElement>("[aria-invalid=true]")?.focus();
+    if (state.at && !state.ok && state.message) formRef.current?.querySelector<HTMLElement>("[aria-invalid=true]")?.focus();
   }, [state]);
 
   if (state.ok) {
     return (
-      <div role="status" className="rounded-3xl border border-line bg-surface p-8 text-center shadow-soft sm:p-12">
-        <CheckCircle2 aria-hidden className="mx-auto size-12 text-emerald-600 dark:text-emerald-400" />
-        <h2 className="mt-5 text-2xl font-semibold tracking-tight">Application received</h2>
-        <p className="mx-auto mt-3 max-w-md text-muted">{state.message}</p>
+      <div className="rounded-3xl border border-line bg-surface p-8 text-center shadow-soft sm:p-12">
+        {state.message && (
+          <div role="status">
+            <CheckCircle2 aria-hidden className="mx-auto size-12 text-emerald-600 dark:text-emerald-400" />
+            <h2 className="mt-5 text-2xl font-semibold tracking-tight">Application received</h2>
+            <p className="mx-auto mt-3 max-w-md text-muted">{state.message}</p>
+          </div>
+        )}
         <LinkButton href="/events" variant="dark" arrow className="mt-8">
           Explore upcoming events
         </LinkButton>

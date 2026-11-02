@@ -5,10 +5,12 @@ import { createUser, resetPassword } from "@/actions/admin/users";
 import { Button } from "@/components/ui/button";
 import { Field, FormMessage, Input, Select } from "@/components/ui/form";
 import { useFormAction } from "@/components/ui/use-form-action";
+import { FormComplete } from "@/components/ui/form-complete";
 
 export function CreateUserForm() {
-  const { state, onSubmit, pending } = useFormAction(createUser);
+  const { state, onSubmit, pending, reset } = useFormAction(createUser, { refreshOnSuccess: true });
   const e = state.fieldErrors ?? {};
+  if (state.ok) return <FormComplete message={state.message} reopenLabel="Add another account" onReopen={reset} />;
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-4">
       {state.message && <FormMessage tone={state.ok ? "success" : "error"}>{state.message}</FormMessage>}
@@ -20,8 +22,8 @@ export function CreateUserForm() {
       </Field>
       <Field label="Role" name="role" required>
         <Select name="role" defaultValue="editor">
-          <option value="editor">Editor — Events, Projects, Team</option>
-          <option value="admin">Admin — content, applications, settings</option>
+          <option value="editor">Editor — Events, Projects, Team, Ads & News</option>
+          <option value="admin">Admin — content, applications</option>
           <option value="super_admin">Super Admin — full access</option>
         </Select>
       </Field>
@@ -37,7 +39,8 @@ export function CreateUserForm() {
 
 export function ResetPasswordForm({ id }: { id: string }) {
   const [open, setOpen] = useState(false);
-  const { state, onSubmit, pending } = useFormAction(resetPassword);
+  const { state, onSubmit, pending, reset } = useFormAction(resetPassword);
+  if (state.ok) return <FormComplete message={state.message} reopenLabel="Reset password" onReopen={reset} />;
   if (!open)
     return (
       <button type="button" onClick={() => setOpen(true)} className="h-8 rounded-lg border border-line px-3 text-xs font-medium hover:bg-mist">

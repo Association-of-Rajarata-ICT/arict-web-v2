@@ -107,6 +107,7 @@ export default async function SubmissionPage({ params }: PageProps<"/admin/proje
             <ReviewForm
               id={s.id}
               action={reviewSubmission}
+              successHref="/admin/project-submissions"
               status={s.status}
               notes={s.adminNotes}
               options={SUBMISSION_STATUS_OPTIONS.map((o) => ({ ...o, disabled: o.value === "accepted" && s.status !== "accepted" }))}

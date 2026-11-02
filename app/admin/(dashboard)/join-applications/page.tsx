@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { archiveJoinApplication } from "@/actions/admin/join";
 import { ActionButton } from "@/components/admin/action-button";
-import { AdminEmpty, AdminHeader, SearchFilters, StatusBadge, Table, Td, Th, param } from "@/components/admin/ui";
+import { AdminEmpty, AdminHeader, Notice, SearchFilters, StatusBadge, Table, Td, Th, param } from "@/components/admin/ui";
 import { JOIN_STATUS_OPTIONS } from "@/lib/admin-options";
 import { requirePage } from "@/lib/auth/session";
 import { listJoinApplications } from "@/lib/data/admin";
@@ -23,6 +23,7 @@ export default async function JoinApplicationsPage({ searchParams }: PageProps<"
   return (
     <>
       <AdminHeader title="Join applications" description="Membership applications from /join. Archived applications are hidden unless you filter for them." />
+      <Notice searchParams={sp} />
       <SearchFilters
         q={q}
         placeholder="Search by name, email or registration number"

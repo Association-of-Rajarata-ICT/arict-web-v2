@@ -1,7 +1,6 @@
 "use server";
 
 import { and, eq, isNull } from "drizzle-orm";
-import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { projectSubmissions } from "@/lib/db/schema";
 import { writeProject } from "@/lib/project-writes";
@@ -42,9 +41,8 @@ export async function acceptSubmission(_prev: ActionState, formData: FormData): 
     const parsed = projectSchema.safeParse({ ...raw, published: "false", featured: "false" });
     if (!parsed.success) return fail("Please fix the highlighted fields.", fieldErrorsFrom(parsed.error));
 
-    let projectId: string;
     try {
-      projectId = await db.transaction(async (tx) => {
+      await db.transaction(async (tx) => {
         const [submission] = await tx
           .select({ id: projectSubmissions.id })
           .from(projectSubmissions)
@@ -66,6 +64,6 @@ export async function acceptSubmission(_prev: ActionState, formData: FormData): 
       throw error;
     }
     invalidate("projects");
-    redirect(`/admin/projects/${projectId}?saved=Submission+accepted.+The+project+is+an+unpublished+draft+%E2%80%94+review+it+and+publish+when+ready.`);
+    return ok("Submission accepted. The project is an unpublished draft. Open it from the projects list to review and publish when ready.");
   });
 }

@@ -1,7 +1,6 @@
 "use server";
 
 import { and, count, eq, ne } from "drizzle-orm";
-import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { teamMembers, teamTerms } from "@/lib/db/schema";
 import { invalidate } from "@/lib/revalidate";
@@ -28,8 +27,7 @@ export async function saveTerm(_prev: ActionState, formData: FormData): Promise<
       throw error;
     }
     invalidate("team");
-    if (!id) redirect("/admin/team/terms?saved=Term+created.");
-    return ok("Term saved.");
+    return ok(id ? "Term saved." : "Term created.");
   });
 }
 
@@ -130,7 +128,7 @@ export async function saveMember(_prev: ActionState, formData: FormData): Promis
       throw error;
     }
     invalidate("team");
-    redirect(`/admin/team?term=${data.teamTermId}&saved=Member+added.`);
+    return ok("Member added.");
   });
 }
 

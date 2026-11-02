@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, CalendarDays, CalendarClock, FolderGit2, History, Inbox, UserPlus, Users } from "lucide-react";
+import { ArrowUpRight, CalendarDays, CalendarClock, FolderGit2, History, Inbox, Megaphone, UserPlus, Users } from "lucide-react";
 import { AdminHeader, Card, Notice, StatusBadge } from "@/components/admin/ui";
 import { can, requirePage } from "@/lib/auth/session";
 import { getDashboardStats, getRecentActivity } from "@/lib/data/admin";
@@ -15,6 +15,7 @@ export default async function AdminDashboard({ searchParams }: PageProps<"/admin
   const [stats, activity, sp] = await Promise.all([getDashboardStats(), moderation ? getRecentActivity() : null, searchParams]);
 
   const tiles = [
+    { label: "Published Ads & News", value: stats.publishedAnnouncements, href: "/admin/announcements?status=published", icon: Megaphone },
     { label: "Total Events", value: stats.totalEvents, href: "/admin/events", icon: CalendarDays },
     { label: "Upcoming Events", value: stats.upcomingEvents, href: "/admin/events", icon: CalendarClock },
     { label: "Published Projects", value: stats.publishedProjects, href: "/admin/projects?status=published", icon: FolderGit2 },

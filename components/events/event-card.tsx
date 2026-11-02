@@ -54,7 +54,7 @@ export function EventCard({
           {status && <Pill tone={status.tone}>{status.label}</Pill>}
         </div>
         <Heading className="mt-4 text-xl leading-snug font-semibold tracking-tight text-ink">
-          <Link href={`/events/${event.slug}`} className="after:absolute after:inset-0 after:content-['']">
+          <Link href={`/events/${event.slug}`} prefetch={true} className="after:absolute after:inset-0 after:content-['']">
             {event.title}
           </Link>
         </Heading>

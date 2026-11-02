@@ -12,14 +12,16 @@ export function ReviewForm({
   status,
   notes,
   options,
+  successHref,
 }: {
   id: string;
   action: (prev: ActionState, fd: FormData) => Promise<ActionState>;
   status: string;
   notes: string | null;
   options: { value: string; label: string; disabled?: boolean }[];
+  successHref: string;
 }) {
-  const { state, onSubmit, pending } = useFormAction(action);
+  const { state, onSubmit, pending } = useFormAction(action, { successHref });
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <input type="hidden" name="id" value={id} />

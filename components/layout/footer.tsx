@@ -4,12 +4,13 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { getSiteSettings } from "@/lib/data/public";
 import { FOOTER_NAV } from "@/lib/site";
 import { SOCIAL_ICONS } from "@/components/ui/social-icons";
+import { ConsentSettingsLink } from "@/components/consent/consent-banner";
 import { FooterCta } from "./footer-cta";
 import { Logo } from "./logo";
 
 async function CopyrightYear() {
   "use cache";
-  cacheLife("days");
+  cacheLife("year");
   return <>{new Date().getFullYear()}</>;
 }
 
@@ -140,7 +141,13 @@ export async function Footer() {
           <p>
             © <CopyrightYear /> ARICT. All rights reserved.
           </p>
-          <p>{settings.general.fullName}</p>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
+            <Link href="/privacy" className="transition-colors hover:text-white">
+              Privacy
+            </Link>
+            <ConsentSettingsLink className="transition-colors hover:text-white" />
+            <span>{settings.general.fullName}</span>
+          </div>
         </div>
       </div>
     </footer>

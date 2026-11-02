@@ -10,12 +10,12 @@ import { auth } from "./index";
 export type Permission = "content" | "moderation" | "settings" | "users";
 
 export const PERMISSIONS: Record<Permission, UserRole[]> = {
-  // Events, Projects, Team
+  // Events, Projects, Team, Ads & News
   content: ["super_admin", "admin", "editor"],
   // Project submissions, Join applications
   moderation: ["super_admin", "admin"],
   // Site settings and homepage content
-  settings: ["super_admin", "admin"],
+  settings: ["super_admin"],
   // Admin accounts
   users: ["super_admin"],
 };

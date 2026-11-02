@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { isEmailjsConfigured, sendContactEmail } from "@/lib/emailjs";
+import { clearForm } from "@/lib/clear-form";
+import { FORM_NOTIFICATION_DURATION_MS } from "@/lib/form-feedback";
 import { contactSchema } from "@/lib/validations/public";
 import { fieldErrorsFrom, type FieldErrors } from "@/lib/validations/common";
 import { Button } from "@/components/ui/button";
@@ -16,6 +18,7 @@ type Status = "idle" | "sending" | "success" | "error";
 
 export function ContactForm({ fallbackEmail }: { fallbackEmail?: string }) {
   const [status, setStatus] = useState<Status>("idle");
+  const [dismissedStatus, setDismissedStatus] = useState<Status | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [notice, setNotice] = useState<string | null>(null);
   const mountedAt = useRef(0);
@@ -25,6 +28,18 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail?: string }) {
   useEffect(() => {
     mountedAt.current = Date.now();
   }, []);
+
+  useEffect(() => {
+    if (status !== "success" && status !== "error") return;
+    const timer = setTimeout(() => setDismissedStatus(status), FORM_NOTIFICATION_DURATION_MS);
+    return () => clearTimeout(timer);
+  }, [status]);
+
+  useEffect(() => {
+    if (!notice) return;
+    const timer = setTimeout(() => setNotice(null), FORM_NOTIFICATION_DURATION_MS);
+    return () => clearTimeout(timer);
+  }, [notice]);
 
   function lastSent() {
     try {
@@ -37,12 +52,14 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail?: string }) {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (status === "sending") return;
+    setDismissedStatus(null);
     setNotice(null);
     const form = event.currentTarget;
     const fd = new FormData(form);
 
     // Honeypot: pretend success for bots.
     if (String(fd.get("company_website") ?? "").trim()) {
+      clearForm(form);
       setStatus("success");
       return;
     }
@@ -73,7 +90,7 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail?: string }) {
       try {
         localStorage.setItem(STORAGE_KEY, String(Date.now()));
       } catch {}
-      form.reset();
+      clearForm(form);
       setStatus("success");
     } catch (error) {
       console.error("EmailJS send failed", error);
@@ -83,11 +100,15 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail?: string }) {
 
   if (status === "success") {
     return (
-      <div role="status" className="rounded-3xl border border-line bg-surface p-8 text-center shadow-soft sm:p-10">
-        <CheckCircle2 aria-hidden className="mx-auto size-12 text-emerald-600 dark:text-emerald-400" />
-        <p className="mt-5 text-lg font-semibold">Message sent</p>
-        <p className="mx-auto mt-2 max-w-sm text-muted">Your message has been sent successfully. We&apos;ll get back to you soon.</p>
-        <Button variant="outline" className="mt-7" onClick={() => setStatus("idle")}>
+      <div className="rounded-3xl border border-line bg-surface p-8 text-center shadow-soft sm:p-10">
+        {dismissedStatus !== "success" && (
+          <div role="status">
+            <CheckCircle2 aria-hidden className="mx-auto size-12 text-emerald-600 dark:text-emerald-400" />
+            <p className="mt-5 text-lg font-semibold">Message sent</p>
+            <p className="mx-auto mt-2 max-w-sm text-muted">Your message has been sent successfully. We&apos;ll get back to you soon.</p>
+          </div>
+        )}
+        <Button variant="outline" className="mt-7" onClick={() => { setStatus("idle"); setDismissedStatus(null); setErrors({}); mountedAt.current = Date.now(); }}>
           Send another message
         </Button>
       </div>
@@ -114,7 +135,7 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail?: string }) {
           ) : null}
         </FormMessage>
       )}
-      {status === "error" && (
+      {status === "error" && dismissedStatus !== "error" && (
         <FormMessage tone="error">We couldn&apos;t send your message. Please try again.</FormMessage>
       )}
       {notice && <FormMessage tone="info">{notice}</FormMessage>}

@@ -1,4 +1,5 @@
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
+import { ConsentedMap } from "@/components/contact/consented-map";
 import { ContactForm } from "@/components/contact/contact-form";
 import { FadeUp } from "@/components/motion/reveal";
 import { PageHero } from "@/components/ui/misc";
@@ -89,15 +90,7 @@ export default async function ContactPage() {
               <h2 id="map-heading" className="sr-only">
                 Map
               </h2>
-              <div className="overflow-hidden rounded-3xl border border-line bg-mist">
-                <iframe
-                  src={contact.mapEmbedUrl}
-                  title="Map showing Rajarata University of Sri Lanka"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  className="aspect-[4/3] w-full"
-                />
-              </div>
+              <ConsentedMap src={contact.mapEmbedUrl} title="Map showing Rajarata University of Sri Lanka" />
               {contact.mapLink && (
                 <a href={contact.mapLink} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-sm font-medium underline-offset-4 hover:underline">
                   Open in Google Maps

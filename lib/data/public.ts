@@ -3,6 +3,7 @@ import { and, asc, desc, eq, gte, inArray, ne, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "../db";
 import {
+  announcements,
   eventImages,
   events,
   projectImages,
@@ -16,6 +17,7 @@ import {
 import { resolveSettings } from "../settings";
 import { LEADERSHIP_POSITIONS, sortMembers } from "../team";
 import { todayInColombo } from "../utils";
+import { toPublicAnnouncement } from "../announcements";
 
 /*
  * Public, cacheable reads. Every function is tagged so admin mutations can
@@ -23,11 +25,31 @@ import { todayInColombo } from "../utils";
  */
 
 export const TAGS = {
+  announcements: "announcements",
   settings: "settings",
   events: "events",
   projects: "projects",
   team: "team",
 } as const;
+
+export async function getPublicAnnouncements() {
+  "use cache";
+  cacheLife("content");
+  cacheTag(TAGS.announcements);
+  const rows = await db.select({
+    id: announcements.id,
+    title: announcements.title,
+    kind: announcements.kind,
+    message: announcements.message,
+    image: announcements.image,
+    imageAlt: announcements.imageAlt,
+    linkLabel: announcements.linkLabel,
+    linkUrl: announcements.linkUrl,
+    updatedAt: announcements.updatedAt,
+  }).from(announcements).where(eq(announcements.published, true))
+    .orderBy(asc(announcements.displayOrder), desc(announcements.createdAt), asc(announcements.id));
+  return rows.map(toPublicAnnouncement);
+}
 
 /* ---------------------------------------------------------------- settings */
 

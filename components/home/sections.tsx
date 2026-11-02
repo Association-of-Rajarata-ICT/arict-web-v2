@@ -193,7 +193,7 @@ export function TeamPreview({ eyebrow, heading, members }: { eyebrow: string; he
           />
         </FadeUp>
         {members.length > 0 ? (
-          <StaggerContainer className="mt-14 grid grid-cols-1 gap-5 min-[420px]:grid-cols-2 lg:grid-cols-4">
+          <StaggerContainer className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {members.map((m) => (
               <StaggerItem key={m.id}>
                 <MemberCard member={m} />

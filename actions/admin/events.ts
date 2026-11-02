@@ -1,7 +1,6 @@
 "use server";
 
 import { eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { eventImages, events } from "@/lib/db/schema";
 import { invalidate } from "@/lib/revalidate";
@@ -18,7 +17,7 @@ export async function saveEvent(_prev: ActionState, formData: FormData): Promise
     const alts = String(formData.get("imageAltText") ?? "").split("\n");
 
     try {
-      const eventId = await db.transaction(async (tx) => {
+      await db.transaction(async (tx) => {
         let eid = id;
         if (id) {
           const updated = await tx.update(events).set(data).where(eq(events.id, id)).returning({ id: events.id });
@@ -38,11 +37,9 @@ export async function saveEvent(_prev: ActionState, formData: FormData): Promise
             })),
           );
         }
-        return eid;
       });
       invalidate("events");
-      if (!id) redirect(`/admin/events/${eventId}?saved=Event+created.`);
-      return ok("Event saved.");
+      return ok(id ? "Event saved." : "Event created.");
     } catch (error) {
       if (isUniqueViolation(error)) return fail("That slug is already used by another event.", { slug: "Choose a different slug." });
       if (error instanceof Error && error.message === "not_found") return fail("This event no longer exists.");

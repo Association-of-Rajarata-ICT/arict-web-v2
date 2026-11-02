@@ -28,6 +28,7 @@ export function PastCommittees({ terms, activeYear }: { terms: Term[]; activeYea
                 <StaggerItem as="li" key={t.id}>
                   <Link
                     href={`/team/${t.year}`}
+                    prefetch={true}
                     aria-current={active ? "page" : undefined}
                     className={`group flex h-full flex-col rounded-3xl border bg-surface p-6 transition-[box-shadow,transform,border-color] duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-30px_rgb(0_0_0/0.35)] ${active ? "border-ink" : "border-line"}`}
                   >

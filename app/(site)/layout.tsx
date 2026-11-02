@@ -1,3 +1,6 @@
+import { Suspense } from "react";
+import { SiteAnnouncements } from "@/components/announcements/site-announcements";
+import { ConsentBanner } from "@/components/consent/consent-banner";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { ScrollProgress } from "@/components/motion/effects";
@@ -14,10 +17,14 @@ export default function SiteLayout({ children }: LayoutProps<"/">) {
       </a>
       <ScrollProgress />
       <Navbar />
+      <Suspense fallback={null}>
+        <SiteAnnouncements />
+      </Suspense>
       <main id="main" className="flex-1">
         {children}
       </main>
       <Footer />
+      <ConsentBanner />
     </SmoothScrollProvider>
   );
 }

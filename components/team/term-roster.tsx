@@ -38,7 +38,7 @@ export function TermRoster({ members, current }: { members: PublicMember[]; curr
               {prefix}Executive Committee
             </h2>
           </FadeUp>
-          <StaggerContainer className="mt-10 grid grid-cols-1 gap-5 min-[420px]:grid-cols-2 lg:grid-cols-3">
+          <StaggerContainer className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {otherExec.map((m) => (
               <StaggerItem key={m.id}>
                 <MemberCard member={m} />

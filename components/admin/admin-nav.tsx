@@ -8,6 +8,7 @@ import {
   FolderGit2,
   Inbox,
   LayoutDashboard,
+  Megaphone,
   Menu,
   Settings,
   ShieldCheck,
@@ -18,10 +19,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type NavKey = "dashboard" | "events" | "projects" | "submissions" | "team" | "terms" | "join" | "settings" | "users";
+export type NavKey = "dashboard" | "announcements" | "events" | "projects" | "submissions" | "team" | "terms" | "join" | "settings" | "users";
 
 const ITEMS: { key: NavKey; href: string; label: string; icon: typeof CalendarDays }[] = [
   { key: "dashboard", href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { key: "announcements", href: "/admin/announcements", label: "Ads & News", icon: Megaphone },
   { key: "events", href: "/admin/events", label: "Events", icon: CalendarDays },
   { key: "projects", href: "/admin/projects", label: "Projects", icon: FolderGit2 },
   { key: "submissions", href: "/admin/project-submissions", label: "Project Submissions", icon: Inbox },

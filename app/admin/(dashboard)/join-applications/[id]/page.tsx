@@ -75,7 +75,7 @@ export default async function JoinApplicationPage({ params }: PageProps<"/admin/
           </Card>
         </div>
         <Card title="Review">
-          <ReviewForm id={a.id} action={reviewJoinApplication} status={a.status} notes={a.adminNotes} options={JOIN_STATUS_OPTIONS} />
+          <ReviewForm id={a.id} action={reviewJoinApplication} status={a.status} notes={a.adminNotes} options={JOIN_STATUS_OPTIONS} successHref="/admin/join-applications" />
         </Card>
       </div>
     </>

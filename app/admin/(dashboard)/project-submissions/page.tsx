@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AdminEmpty, AdminHeader, SearchFilters, StatusBadge, Table, Td, Th, param } from "@/components/admin/ui";
+import { AdminEmpty, AdminHeader, Notice, SearchFilters, StatusBadge, Table, Td, Th, param } from "@/components/admin/ui";
 import { SUBMISSION_STATUS_OPTIONS } from "@/lib/admin-options";
 import { requirePage } from "@/lib/auth/session";
 import { listSubmissions } from "@/lib/data/admin";
@@ -19,6 +19,7 @@ export default async function SubmissionsPage({ searchParams }: PageProps<"/admi
   return (
     <>
       <AdminHeader title="Project submissions" description="Projects shared by students through the public “Share your Project” form. Nothing is published automatically." />
+      <Notice searchParams={sp} />
       <SearchFilters q={q} placeholder="Search by title, submitter name or email" filters={[{ name: "status", label: "All statuses", value: status, options: SUBMISSION_STATUS_OPTIONS }]} />
       {rows.length === 0 ? (
         <AdminEmpty title={q || status ? "No submissions match your search." : "No project submissions yet."} description="New submissions from /projects/submit will appear here." />

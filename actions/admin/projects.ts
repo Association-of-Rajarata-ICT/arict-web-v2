@@ -1,7 +1,6 @@
 "use server";
 
 import { eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { projects } from "@/lib/db/schema";
 import { writeProject } from "@/lib/project-writes";
@@ -16,10 +15,9 @@ export async function saveProject(_prev: ActionState, formData: FormData): Promi
     const parsed = projectSchema.safeParse(formToObject(formData, ["screenshots"]));
     if (!parsed.success) return fail("Please fix the highlighted fields.", fieldErrorsFrom(parsed.error));
     try {
-      const projectId = await db.transaction((tx) => writeProject(tx, id, parsed.data));
+      await db.transaction((tx) => writeProject(tx, id, parsed.data));
       invalidate("projects");
-      if (!id) redirect(`/admin/projects/${projectId}?saved=Project+created.`);
-      return ok("Project saved.");
+      return ok(id ? "Project saved." : "Project created.");
     } catch (error) {
       if (isUniqueViolation(error)) return fail("That slug is already used by another project.", { slug: "Choose a different slug." });
       if (error instanceof Error && error.message === "not_found") return fail("This project no longer exists.");

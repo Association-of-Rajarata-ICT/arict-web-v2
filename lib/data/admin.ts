@@ -2,6 +2,7 @@ import "server-only";
 import { and, asc, count, desc, eq, ilike, inArray, ne, or, sql, type SQL } from "drizzle-orm";
 import { db } from "../db";
 import {
+  announcements,
   eventImages,
   events,
   joinApplications,
@@ -28,7 +29,7 @@ const like = (q: string) => `%${q.replace(/[%_\\]/g, (m) => `\\${m}`)}%`;
 
 export async function getDashboardStats() {
   const today = todayInColombo();
-  const [[ev], [up], [pp], [ps], [cm], [pt], [pj]] = await Promise.all([
+  const [[ev], [up], [pp], [ps], [cm], [pt], [pj], [an]] = await Promise.all([
     db.select({ n: count() }).from(events).where(ne(events.status, "archived")),
     db.select({ n: count() }).from(events).where(and(eq(events.published, true), upcomingCondition(today))),
     db.select({ n: count() }).from(projects).where(and(eq(projects.published, true), ne(projects.status, "archived"))),
@@ -40,6 +41,7 @@ export async function getDashboardStats() {
       .where(eq(teamTerms.isCurrent, true)),
     db.select({ n: count() }).from(teamTerms).where(eq(teamTerms.isCurrent, false)),
     db.select({ n: count() }).from(joinApplications).where(eq(joinApplications.status, "pending")),
+    db.select({ n: count() }).from(announcements).where(eq(announcements.published, true)),
   ]);
   return {
     totalEvents: ev!.n,
@@ -49,7 +51,22 @@ export async function getDashboardStats() {
     currentMembers: cm!.n,
     pastTerms: pt!.n,
     pendingJoins: pj!.n,
+    publishedAnnouncements: an!.n,
   };
+}
+
+export async function listAnnouncements(q?: string, status?: string) {
+  const conditions: SQL[] = [];
+  if (q) conditions.push(or(ilike(announcements.title, like(q)), ilike(announcements.message, like(q)))!);
+  if (status === "published") conditions.push(eq(announcements.published, true));
+  if (status === "draft") conditions.push(eq(announcements.published, false));
+  return db.select().from(announcements).where(conditions.length ? and(...conditions) : undefined)
+    .orderBy(asc(announcements.displayOrder), desc(announcements.createdAt));
+}
+
+export async function getAnnouncementForEdit(id: string) {
+  const [row] = await db.select().from(announcements).where(eq(announcements.id, id)).limit(1);
+  return row ?? null;
 }
 
 export async function getRecentActivity() {

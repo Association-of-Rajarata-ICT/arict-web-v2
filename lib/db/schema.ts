@@ -28,6 +28,7 @@ const timestamps = {
  * ------------------------------------------------------------------------- */
 
 export const userRole = pgEnum("user_role", ["super_admin", "admin", "editor"]);
+export const announcementKind = pgEnum("announcement_kind", ["news", "advertisement"]);
 
 export const eventStatus = pgEnum("event_status", [
   "scheduled",
@@ -84,6 +85,28 @@ export const users = pgTable(
     ...timestamps,
   },
   (t) => [uniqueIndex("users_email_unique").on(sql`lower(${t.email})`)],
+);
+
+/* ----------------------------------------------------------------------------
+ * Ads and news shown in the visitor popup
+ * ------------------------------------------------------------------------- */
+
+export const announcements = pgTable(
+  "announcements",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: varchar("title", { length: 120 }).notNull(),
+    kind: announcementKind("kind").notNull().default("news"),
+    message: text("message").notNull(),
+    image: text("image"),
+    imageAlt: varchar("image_alt", { length: 200 }),
+    linkLabel: varchar("link_label", { length: 40 }),
+    linkUrl: text("link_url"),
+    published: boolean("published").notNull().default(false),
+    displayOrder: integer("display_order").notNull().default(0),
+    ...timestamps,
+  },
+  (t) => [index("announcements_published_order_idx").on(t.published, t.displayOrder)],
 );
 
 /* ----------------------------------------------------------------------------
@@ -360,6 +383,7 @@ export const rateLimitHits = pgTable(
 );
 
 export type User = typeof users.$inferSelect;
+export type Announcement = typeof announcements.$inferSelect;
 export type Event = typeof events.$inferSelect;
 export type EventImage = typeof eventImages.$inferSelect;
 export type Project = typeof projects.$inferSelect;
