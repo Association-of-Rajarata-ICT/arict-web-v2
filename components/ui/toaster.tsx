@@ -6,14 +6,14 @@ import { Toaster as Sonner } from "sonner";
 /**
  * The one place messages appear across the site and the admin: call `toast.success(...)`,
  * `toast.error(...)` or `toast.info(...)` from "sonner". Styled with the theme tokens, so it
- * follows light/dark mode. Shown top-right, below the floating navbar (top on phones), for 5 seconds.
+ * follows light/dark mode. Shown bottom-right (bottom on phones) for 5 seconds.
  */
 export function Toaster() {
   return (
     <Sonner
-      position="top-right"
-      offset={{ top: 88, right: 16 }}
-      mobileOffset={{ top: 80, left: 12, right: 12 }}
+      position="bottom-right"
+      offset={{ bottom: 24, right: 24 }}
+      mobileOffset={{ bottom: 12, left: 12, right: 12 }}
       visibleToasts={4}
       duration={5_000}
       closeButton
