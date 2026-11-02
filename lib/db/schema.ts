@@ -129,6 +129,7 @@ export const events = pgTable(
     location: varchar("location", { length: 200 }),
     organizer: varchar("organizer", { length: 160 }),
     registrationUrl: text("registration_url"),
+    facebookAlbumUrl: text("facebook_album_url"),
     status: eventStatus("status").notNull().default("scheduled"),
     category: varchar("category", { length: 60 }).notNull().default("Workshop"),
     featured: boolean("featured").notNull().default(false),
@@ -344,6 +345,8 @@ export const joinApplications = pgTable(
     skills: text("skills").notNull(),
     reason: text("reason").notNull(),
     linkedinUrl: text("linkedin_url"),
+    portfolioUrl: text("portfolio_url"),
+    /** No longer collected (replaced by portfolioUrl); kept so older applications keep their data. */
     githubUrl: text("github_url"),
     status: joinStatus("status").notNull().default("pending"),
     adminNotes: text("admin_notes"),

@@ -6,8 +6,9 @@ import { submitProject } from "@/actions/public";
 import { MAX_SUBMISSION_SCREENSHOTS } from "@/lib/uploads";
 import { PROJECT_CATEGORIES } from "@/lib/validations/public";
 import { Button, LinkButton } from "@/components/ui/button";
-import { Field, FormMessage, Honeypot, Input, Select, Textarea } from "@/components/ui/form";
+import { Field, FormMessage, Honeypot, Input, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { SelectWithOther } from "@/components/ui/select-with-other";
 import { useFormAction } from "@/components/ui/use-form-action";
 import { useFormToken } from "@/components/ui/use-form-token";
 
@@ -74,16 +75,8 @@ export function SubmissionForm({ currentYear }: { currentYear: number }) {
           <Textarea name="fullDescription" required maxLength={8000} rows={9} error={e.fullDescription} hasHint />
         </Field>
         <div className="grid gap-6 sm:grid-cols-2">
-          <Field label="Project Category" name="category" required error={e.category}>
-            <Select name="category" required defaultValue="" error={e.category}>
-              <option value="" disabled>
-                Choose a category
-              </option>
-              {PROJECT_CATEGORIES.map((c) => (
-                <option key={c}>{c}</option>
-              ))}
-            </Select>
-          </Field>
+          <SelectWithOther name="category" label="Project Category" options={PROJECT_CATEGORIES}
+            error={e.category} otherError={e.categoryOther} />
           <Field label="Project Year" name="projectYear" required error={e.projectYear}>
             <Input name="projectYear" type="number" inputMode="numeric" min={2000} max={currentYear + 1} defaultValue={currentYear} required error={e.projectYear} />
           </Field>

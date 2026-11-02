@@ -7,6 +7,7 @@ import { EVENT_CATEGORIES } from "@/lib/validations/public";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { SelectWithOther } from "@/components/ui/select-with-other";
 import { useFormAction } from "@/components/ui/use-form-action";
 import { Card } from "./ui";
 import { TitleSlugFields } from "./slug-field";
@@ -46,13 +47,8 @@ export function EventForm({ event, categories }: { event?: Event & { images: Eve
             <Textarea name="content" defaultValue={event?.content} rows={12} error={e.content} hasHint />
           </Field>
           <div className="grid gap-5 sm:grid-cols-2">
-            <Field label="Category" name="category" required error={e.category}>
-              <Select name="category" defaultValue={event?.category ?? "Workshop"} error={e.category}>
-                {allCategories.map((c) => (
-                  <option key={c}>{c}</option>
-                ))}
-              </Select>
-            </Field>
+            <SelectWithOther name="category" label="Category" options={allCategories}
+              defaultValue={event?.category ?? "Workshop"} error={e.category} otherError={e.categoryOther} />
             <Field label="Status" name="status" required error={e.status}>
               <Select name="status" defaultValue={event?.status ?? "scheduled"} error={e.status}>
                 {Object.keys(STATUS_LABELS).map((s) => (
@@ -108,6 +104,12 @@ export function EventForm({ event, categories }: { event?: Event & { images: Eve
           />
           <Field label="Photo descriptions (alt text)" name="imageAltText" hint="One line per photo, in the same order. Describe what each photo shows.">
             <Textarea name="imageAltText" rows={4} defaultValue={event?.images.map((i) => i.altText).join("\n") ?? ""} hasHint />
+          </Field>
+          <Field label="Facebook album link" name="facebookAlbumUrl" error={e.facebookAlbumUrl}
+            hint="Paste a public Facebook album link. Visitors can open the full album from the event page (up to 500 characters).">
+            <Input name="facebookAlbumUrl" type="url" defaultValue={event?.facebookAlbumUrl ?? ""}
+              maxLength={500} placeholder="https://www.facebook.com/media/set/?set=..."
+              error={e.facebookAlbumUrl} hasHint />
           </Field>
         </div>
       </Card>

@@ -56,7 +56,8 @@ export default async function JoinApplicationPage({ params }: PageProps<"/admin/
               <Row label="Academic year">{ACADEMIC_YEAR_LABELS[a.academicYear]}</Row>
               <Row label="Degree / program">{a.degree}</Row>
               <Row label="LinkedIn">{link(a.linkedinUrl)}</Row>
-              <Row label="GitHub">{link(a.githubUrl)}</Row>
+              {/* Older applications collected a GitHub link instead of a portfolio. */}
+              <Row label="Portfolio">{link(a.portfolioUrl ?? a.githubUrl)}</Row>
             </dl>
           </Card>
           <Card title="Interests & skills">

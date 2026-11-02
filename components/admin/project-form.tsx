@@ -7,6 +7,7 @@ import { PROJECT_CATEGORIES } from "@/lib/validations/public";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { SelectWithOther } from "@/components/ui/select-with-other";
 import { useFormAction } from "@/components/ui/use-form-action";
 import { Card } from "./ui";
 import { TitleSlugFields } from "./slug-field";
@@ -50,7 +51,6 @@ export function ProjectForm({
   const [uploading, setUploading] = useState(0);
   const e = state.fieldErrors ?? {};
   const onBusy = (b: boolean) => setUploading((n) => Math.max(0, n + (b ? 1 : -1)));
-  const categories = [...new Set([...PROJECT_CATEGORIES, ...(project?.category ? [project.category] : [])])];
 
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-6">
@@ -70,13 +70,8 @@ export function ProjectForm({
             <Textarea name="content" defaultValue={project?.content} rows={12} error={e.content} hasHint />
           </Field>
           <div className="grid gap-5 sm:grid-cols-3">
-            <Field label="Category" name="category" required error={e.category}>
-              <Select name="category" defaultValue={project?.category ?? PROJECT_CATEGORIES[0]} error={e.category}>
-                {categories.map((c) => (
-                  <option key={c}>{c}</option>
-                ))}
-              </Select>
-            </Field>
+            <SelectWithOther name="category" label="Category" options={PROJECT_CATEGORIES}
+              defaultValue={project?.category ?? PROJECT_CATEGORIES[0]} error={e.category} otherError={e.categoryOther} />
             <Field label="Year" name="year" required error={e.year}>
               <Input name="year" type="number" defaultValue={project?.year} min={2000} max={2100} required error={e.year} />
             </Field>

@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { eventStatus, joinStatus, projectStatus, submissionStatus, teamPosition } from "../db/schema";
-import { PROJECT_CATEGORIES } from "./public";
+import { otherCategoryFields, resolveOtherCategory, validateOtherCategory } from "./other-category";
 import {
   checkbox,
   dateField,
   listField,
   optionalDate,
-  optionalEmail,
+  optionalFacebookAlbumUrl,
   optionalImage,
   optionalText,
   optionalTime,
@@ -36,8 +36,9 @@ export const eventSchema = z
     location: optionalText(200, "Venue"),
     organizer: optionalText(160, "Organizer"),
     registrationUrl: optionalUrl("Registration URL"),
+    facebookAlbumUrl: optionalFacebookAlbumUrl,
     status: z.enum(eventStatus.enumValues),
-    category: requiredText("Category", 60),
+    ...otherCategoryFields,
     featured: checkbox,
     published: checkbox,
     images: imageList,
@@ -45,7 +46,9 @@ export const eventSchema = z
   .refine((v) => !v.endDate || v.endDate >= v.startDate, {
     message: "End date cannot be before the start date.",
     path: ["endDate"],
-  });
+  })
+  .superRefine(validateOtherCategory)
+  .transform(resolveOtherCategory);
 
 export const projectSchema = z.object({
   title: requiredText("Title", 160, 3),
@@ -57,7 +60,7 @@ export const projectSchema = z.object({
   liveUrl: optionalUrl("Live demo URL"),
   videoUrl: optionalUrl("Video URL"),
   year: yearField(),
-  category: z.enum(PROJECT_CATEGORIES, { error: "Choose a category." }),
+  ...otherCategoryFields,
   status: z.enum(projectStatus.enumValues),
   featured: checkbox,
   published: checkbox,
@@ -77,7 +80,7 @@ export const projectSchema = z.object({
     )
     .pipe(z.array(z.object({ name: z.string().min(1), role: z.string().nullable() })).max(30)),
   screenshots: imageList,
-});
+}).superRefine(validateOtherCategory).transform(resolveOtherCategory);
 
 export const teamTermSchema = z
   .object({
@@ -98,11 +101,8 @@ export const teamMemberSchema = z.object({
   position: z.enum(teamPosition.enumValues, { error: "Choose a position." }),
   academicYear: z.coerce.number().int().min(1, "Choose an academic year.").max(4),
   image: optionalImage,
-  bio: optionalText(400, "Bio"),
   linkedinUrl: optionalUrl("LinkedIn URL"),
   portfolioUrl: optionalUrl("Portfolio URL"),
-  githubUrl: optionalUrl("GitHub URL"),
-  email: optionalEmail,
   displayOrder: z.coerce.number().int().min(0).max(999).default(0),
   featuredOnHome: checkbox,
 });

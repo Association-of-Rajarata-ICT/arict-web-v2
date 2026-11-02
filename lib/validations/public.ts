@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { MAX_SUBMISSION_SCREENSHOTS } from "../uploads";
+import { otherCategoryFields, resolveOtherCategory, validateOtherCategory } from "./other-category";
 import {
   emailField,
   listField,
@@ -87,7 +88,7 @@ export const joinSchema = z.object({
   skills: requiredText("Technical skills", 1000, 2),
   reason: requiredText("Reason for joining", 2000, 20),
   linkedinUrl: optionalUrl("LinkedIn URL"),
-  githubUrl: optionalUrl("GitHub URL"),
+  portfolioUrl: optionalUrl("Portfolio URL"),
 });
 
 export type JoinInput = z.infer<typeof joinSchema>;
@@ -100,7 +101,7 @@ export const submissionSchema = z.object({
   title: requiredText("Project title", 160, 3),
   shortDescription: requiredText("Short description", 300, 20),
   fullDescription: requiredText("Full description", 8000, 50),
-  category: z.enum(PROJECT_CATEGORIES, { error: "Choose a project category." }),
+  ...otherCategoryFields,
   technologies: listField("technology", 15, 40).pipe(z.array(z.string()).min(1, "List at least one technology.")),
   projectYear: yearField("Project year"),
   submitterName: requiredText("Your name", 120, 2),
@@ -117,6 +118,6 @@ export const submissionSchema = z.object({
   portfolioUrl: optionalUrl("Portfolio URL"),
   linkedinUrl: optionalUrl("LinkedIn URL"),
   videoUrl: optionalUrl("Video URL"),
-});
+}).superRefine(validateOtherCategory).transform(resolveOtherCategory);
 
 export type SubmissionInput = z.infer<typeof submissionSchema>;

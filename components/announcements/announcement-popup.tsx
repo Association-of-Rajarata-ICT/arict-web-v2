@@ -7,6 +7,25 @@ import { ANNOUNCEMENT_KIND_LABELS, announcementSignature, type PublicAnnouncemen
 import { useLenis } from "@/components/motion/smooth-scroll-provider";
 
 const STORAGE_KEY = "arict-dismissed-announcements";
+/** After closing, the same announcements stay hidden for a day (across tabs and visits). */
+const HIDE_FOR_MS = 24 * 60 * 60 * 1000;
+
+function wasDismissed(signature: string) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null") as { signature?: string; at?: number } | null;
+    return saved?.signature === signature && typeof saved.at === "number" && Date.now() - saved.at < HIDE_FOR_MS;
+  } catch {
+    return false; // storage unavailable: just show the popup
+  }
+}
+
+function rememberDismissal(signature: string) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ signature, at: Date.now() }));
+  } catch {
+    // The popup still works when browser storage is unavailable.
+  }
+}
 
 /** Space around the image: ~16px on phones, growing with the screen up to ~72px. */
 const FRAME_MARGIN = "clamp(1rem, 6vmin, 4.5rem)";
@@ -52,12 +71,8 @@ export function AnnouncementPopup({ items, preview = false }: { items: PublicAnn
   const item = items[currentIndex];
 
   useEffect(() => {
-    if (preview || !signature) return;
-    try {
-      if (sessionStorage.getItem(STORAGE_KEY) === signature) return;
-    } catch {
-      // The popup still works when browser storage is unavailable.
-    }
+    // Changing or adding an announcement changes the signature, so it shows again right away.
+    if (preview || !signature || wasDismissed(signature)) return;
     const timer = setTimeout(() => {
       setIndex(0);
       setOpen(true);
@@ -81,7 +96,7 @@ export function AnnouncementPopup({ items, preview = false }: { items: PublicAnn
 
   const dismiss = () => {
     if (!preview) {
-      try { sessionStorage.setItem(STORAGE_KEY, signature); } catch {}
+      rememberDismissal(signature);
     }
     setOpen(false);
   };

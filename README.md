@@ -177,6 +177,12 @@ Admin sections:
 
 Only projects with `published = true` (and not archived) appear publicly. The homepage additionally requires `featured = true`.
 
+Event and project category forms (including public project submissions and acceptance) reveal a required **Please specify** field when **Other** is selected. Custom categories are limited to **60 characters** in both the UI and server validation, saved as the category, and preserved when editing.
+
+Event detail pages show the first **three uploaded photos**. When more photos exist, the third preview shows **+N** for the additional photos; clicking a preview opens the full gallery, with previous/next buttons, arrow-key navigation, and Escape to close. The cover image is separate. An optional **Facebook album link** in the event editor accepts an HTTPS Facebook URL up to **500 characters** and appears as **View Facebook album**, including when no photos are uploaded. Run `npm run db:migrate` to apply `0003_event_facebook_album` before using this feature.
+
+Run `npm test` for category validation/editing, album-link validation, and gallery-preview regression checks.
+
 ### Committee terms
 
 Each member belongs to a term. When a new term becomes current, the old one appears under **Past Committees** (`/team/[year]`) with all its members and links intact. History is never deleted automatically.

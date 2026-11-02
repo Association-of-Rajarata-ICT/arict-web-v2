@@ -109,8 +109,8 @@ export function JoinForm() {
           <Field label="LinkedIn" name="linkedinUrl" error={e.linkedinUrl}>
             <Input name="linkedinUrl" type="url" inputMode="url" placeholder="https://www.linkedin.com/in/…" error={e.linkedinUrl} />
           </Field>
-          <Field label="GitHub" name="githubUrl" error={e.githubUrl}>
-            <Input name="githubUrl" type="url" inputMode="url" placeholder="https://github.com/…" error={e.githubUrl} />
+          <Field label="Portfolio" name="portfolioUrl" error={e.portfolioUrl}>
+            <Input name="portfolioUrl" type="url" inputMode="url" placeholder="https://yourportfolio.com" error={e.portfolioUrl} />
           </Field>
         </div>
       </fieldset>

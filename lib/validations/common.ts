@@ -91,6 +91,17 @@ export const optionalImage = z
   .refine((v) => v === "" || isAllowedImageUrl(v), "Upload the image again.")
   .transform((v) => (v === "" ? null : v));
 
+export const optionalFacebookAlbumUrl = optionalUrl("Facebook album URL").refine((value) => {
+  if (!value) return true;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && !url.username && !url.password && !url.port &&
+      (url.hostname === "facebook.com" || url.hostname.endsWith(".facebook.com"));
+  } catch {
+    return false;
+  }
+}, "Enter an HTTPS Facebook album link (facebook.com).");
+
 export const checkbox = z
   .union([z.string(), z.boolean()])
   .optional()

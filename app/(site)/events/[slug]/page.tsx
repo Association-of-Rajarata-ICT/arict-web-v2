@@ -4,6 +4,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { CalendarDays, Clock, ExternalLink, MapPin, User } from "lucide-react";
 import { EventCard } from "@/components/events/event-card";
+import { EventGallery } from "@/components/events/event-gallery";
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/motion/reveal";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -99,25 +100,7 @@ async function EventDetail({ params }: Pick<PageProps<"/events/[slug]">, "params
           <div className="lg:col-span-8">
             {event.content ? <RichText text={event.content} /> : <p className="text-muted">More details will be announced soon.</p>}
 
-            {event.images.length > 0 && (
-              <section aria-labelledby="event-photos-heading" className="mt-14">
-                <h2 id="event-photos-heading" className="text-2xl font-semibold tracking-tight">
-                  Photos
-                </h2>
-                <StaggerContainer className="mt-6 grid gap-4 sm:grid-cols-2">
-                  {event.images.map((img) => (
-                    <StaggerItem key={img.id}>
-                      <figure>
-                        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-mist">
-                          <Image src={img.imageUrl} alt={img.altText} fill sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" className="object-cover" />
-                        </div>
-                        {img.caption && <figcaption className="mt-2 text-sm text-muted">{img.caption}</figcaption>}
-                      </figure>
-                    </StaggerItem>
-                  ))}
-                </StaggerContainer>
-              </section>
-            )}
+            <EventGallery images={event.images} albumUrl={event.facebookAlbumUrl} />
 
             <div className="mt-14 border-t border-line pt-8">
               <ShareActions url={url} title={event.title} />

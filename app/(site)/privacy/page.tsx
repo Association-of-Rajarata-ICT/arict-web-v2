@@ -19,7 +19,7 @@ const SECTIONS: { title: string; body: React.ReactNode }[] = [
         <ul>
           <li>
             <strong>Join ARICT</strong>: your name, email, phone, registration number, academic year, degree,
-            interests, skills, your reason for joining, and optional LinkedIn and GitHub links.
+            interests, skills, your reason for joining, and optional LinkedIn and portfolio links.
           </li>
           <li>
             <strong>Share your Project</strong>: your project details and images, plus your name and email so we can

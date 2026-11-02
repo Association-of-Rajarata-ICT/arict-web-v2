@@ -249,7 +249,6 @@ export async function getProjectBySlug(slug: string) {
         name: projectMembers.memberName,
         role: projectMembers.role,
         linkedinUrl: teamMembers.linkedinUrl,
-        githubUrl: teamMembers.githubUrl,
         portfolioUrl: teamMembers.portfolioUrl,
       })
       .from(projectMembers)
@@ -296,11 +295,8 @@ const memberFields = {
   position: teamMembers.position,
   academicYear: teamMembers.academicYear,
   image: teamMembers.image,
-  bio: teamMembers.bio,
   linkedinUrl: teamMembers.linkedinUrl,
   portfolioUrl: teamMembers.portfolioUrl,
-  githubUrl: teamMembers.githubUrl,
-  email: teamMembers.email,
   displayOrder: teamMembers.displayOrder,
   featuredOnHome: teamMembers.featuredOnHome,
 };

@@ -1,22 +1,20 @@
 import Image from "next/image";
-import { Globe, Mail } from "lucide-react";
+import { Globe } from "lucide-react";
 import type { PublicMember } from "@/lib/data/public";
 import { ACADEMIC_YEAR_LABELS, POSITION_LABELS } from "@/lib/team";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/misc";
-import { GithubIcon, LinkedinIcon } from "@/components/ui/social-icons";
+import { LinkedinIcon } from "@/components/ui/social-icons";
 
 type Member = Pick<
   PublicMember,
-  "fullName" | "position" | "academicYear" | "image" | "linkedinUrl" | "portfolioUrl" | "githubUrl" | "email" | "bio"
+  "fullName" | "position" | "academicYear" | "image" | "linkedinUrl" | "portfolioUrl"
 >;
 
 export function MemberLinks({ member, className }: { member: Member; className?: string }) {
   const links = [
     member.linkedinUrl && { href: member.linkedinUrl, label: "LinkedIn", icon: <LinkedinIcon width={15} height={15} /> },
-    member.githubUrl && { href: member.githubUrl, label: "GitHub", icon: <GithubIcon width={15} height={15} /> },
     member.portfolioUrl && { href: member.portfolioUrl, label: "Portfolio", icon: <Globe aria-hidden className="size-[15px]" /> },
-    member.email && { href: `mailto:${member.email}`, label: "Email", icon: <Mail aria-hidden className="size-[15px]" /> },
   ].filter(Boolean) as { href: string; label: string; icon: React.ReactNode }[];
 
   if (links.length === 0) return null;
@@ -26,7 +24,8 @@ export function MemberLinks({ member, className }: { member: Member; className?:
         <li key={l.label}>
           <a
             href={l.href}
-            {...(l.href.startsWith("mailto:") ? {} : { target: "_blank", rel: "noopener noreferrer" })}
+            target="_blank"
+            rel="noopener noreferrer"
             aria-label={`${member.fullName} — ${l.label}`}
             className="inline-flex size-8 items-center justify-center rounded-lg text-paper/80 transition-colors hover:bg-paper/15 hover:text-paper"
           >
@@ -88,7 +87,6 @@ export function MemberCard({
         <p className="mt-1.5 text-xs leading-snug font-medium text-brand">{role}</p>
       </div>
       <div className="flex flex-1 flex-col px-1.5 pt-3 pb-1.5">
-        {member.bio && <p className="mb-3 text-center text-[13px] leading-5 break-words text-body">{member.bio}</p>}
         <div className="mt-auto flex flex-wrap items-center justify-between gap-2">
           {year && (
             <div>

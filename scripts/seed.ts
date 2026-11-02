@@ -418,10 +418,7 @@ async function main() {
             position,
             academicYear,
             linkedinUrl: `https://www.linkedin.com/in/${handle}-sample`,
-            githubUrl: i % 3 === 0 ? `https://github.com/${handle}-sample` : null,
             portfolioUrl: i % 4 === 0 ? `https://${handle}.example.com` : null,
-            email: position === "president" || position === "secretary" ? `${handle}.sample@example.com` : null,
-            bio: isExec ? "Sample profile — replace with the member's own short bio from the admin dashboard." : null,
             displayOrder: i,
             featuredOnHome: term.isCurrent && ["president", "vice_president", "secretary", "senior_treasurer"].includes(position),
           };
@@ -453,7 +450,7 @@ async function main() {
           interests: ["AI / Machine Learning", "Data Science"],
           skills: "Python, pandas, basic machine learning",
           reason: "I'd like to join the AI study group and contribute to ARICT's machine learning workshops.",
-          githubUrl: "https://github.com/minoli-sample",
+          portfolioUrl: "https://minoli-sample.example.com",
           status: "reviewing",
         },
       ]);

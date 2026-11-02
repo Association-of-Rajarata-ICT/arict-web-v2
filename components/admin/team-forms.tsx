@@ -92,9 +92,6 @@ export function MemberForm({
             <Field label="Full name" name="fullName" required error={e.fullName}>
               <Input name="fullName" defaultValue={member?.fullName} required maxLength={120} error={e.fullName} />
             </Field>
-            <Field label="Short bio" name="bio" error={e.bio}>
-              <Textarea name="bio" defaultValue={member?.bio ?? ""} rows={3} maxLength={400} error={e.bio} />
-            </Field>
           </div>
         </div>
       </Card>
@@ -106,12 +103,6 @@ export function MemberForm({
           </Field>
           <Field label="Portfolio" name="portfolioUrl" error={e.portfolioUrl}>
             <Input name="portfolioUrl" type="url" defaultValue={member?.portfolioUrl ?? ""} error={e.portfolioUrl} />
-          </Field>
-          <Field label="GitHub" name="githubUrl" error={e.githubUrl}>
-            <Input name="githubUrl" type="url" defaultValue={member?.githubUrl ?? ""} error={e.githubUrl} />
-          </Field>
-          <Field label="Public email" name="email" error={e.email}>
-            <Input name="email" type="email" defaultValue={member?.email ?? ""} error={e.email} />
           </Field>
         </div>
       </Card>
