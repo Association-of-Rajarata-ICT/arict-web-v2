@@ -90,7 +90,7 @@ export function MemberCard({
         <div className="mt-auto flex flex-wrap items-center justify-between gap-2">
           {year && (
             <div>
-              <p className="text-[11px] text-muted">Academic year</p>
+              <p className="text-[11px] text-muted">Current Status</p>
               <p className="mt-0.5 text-xs font-medium text-ink">{year}</p>
             </div>
           )}
