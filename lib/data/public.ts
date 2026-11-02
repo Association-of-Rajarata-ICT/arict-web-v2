@@ -15,7 +15,7 @@ import {
   teamTerms,
 } from "../db/schema";
 import { resolveSettings } from "../settings";
-import { LEADERSHIP_POSITIONS, sortMembers } from "../team";
+import { HOME_TEAM_LIMIT, LEADERSHIP_POSITIONS, sortMembers } from "../team";
 import { todayInColombo } from "../utils";
 import { toPublicAnnouncement } from "../announcements";
 
@@ -91,17 +91,29 @@ function upcomingCondition(today: string) {
   );
 }
 
-export async function getUpcomingEvents(limit = 3) {
+/**
+ * Events for the homepage: upcoming events (featured ones first), or, when nothing is
+ * coming up, recent past events (featured ones first) so the section is never empty.
+ */
+export async function getHomeEvents(limit = 3) {
   "use cache";
   cacheLife("content");
   cacheTag(TAGS.events);
   const today = todayInColombo();
-  return db
+  const upcoming = await db
     .select(eventCardFields)
     .from(events)
     .where(and(visibleEvent, upcomingCondition(today)))
-    .orderBy(asc(events.startDate), asc(events.startTime))
+    .orderBy(desc(events.featured), asc(events.startDate), asc(events.startTime))
     .limit(limit);
+  if (upcoming.length > 0) return { upcoming: true, events: upcoming };
+  const recent = await db
+    .select(eventCardFields)
+    .from(events)
+    .where(visibleEvent)
+    .orderBy(desc(events.featured), desc(events.startDate))
+    .limit(limit);
+  return { upcoming: false, events: recent };
 }
 
 /** All published events, split into upcoming and past. */
@@ -351,7 +363,8 @@ export async function getPastTerms() {
     .orderBy(desc(teamTerms.year));
 }
 
-export async function getHomeTeam(mode: "featured" | "leadership") {
+/** Members ticked "Feature on homepage" in the current term, or the leadership when none are. */
+export async function getHomeTeam() {
   "use cache";
   cacheLife("content");
   cacheTag(TAGS.team);
@@ -365,7 +378,7 @@ export async function getHomeTeam(mode: "featured" | "leadership") {
     .select(memberFields)
     .from(teamMembers)
     .where(and(eq(teamMembers.teamTermId, term.id), eq(teamMembers.featuredOnHome, true)));
-  if (mode === "featured" && featured.length > 0) return sortMembers(featured).slice(0, 4);
+  if (featured.length > 0) return sortMembers(featured).slice(0, HOME_TEAM_LIMIT);
   const leaders = await db
     .select(memberFields)
     .from(teamMembers)

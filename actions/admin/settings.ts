@@ -46,7 +46,7 @@ function readSection(section: SettingsKey, fd: FormData): Record<string, unknown
         })).filter((s) => s.title !== ""),
       };
     case "homeSections":
-      return pick("eventsEyebrow", "eventsHeading", "eventsCount", "projectsEyebrow", "projectsHeading", "projectsCount", "teamEyebrow", "teamHeading", "teamMode");
+      return pick("eventsEyebrow", "eventsHeading", "eventsCount", "projectsEyebrow", "projectsHeading", "projectsCount", "teamEyebrow", "teamHeading");
     case "joinCta":
       return { ...pick("eyebrow", "heading", "text", "ctaLabel", "ctaHref"), points: lines(fd, "points") };
     case "about":

@@ -3,7 +3,14 @@
 import { useState } from "react";
 import { saveMember, saveTerm } from "@/actions/admin/team";
 import type { TeamMember, TeamPosition, TeamTerm } from "@/lib/db/schema";
-import { CUSTOM_POSITION_MAX_LENGTH, CUSTOM_YEAR_MAX_LENGTH, EXECUTIVE_POSITIONS, OTHER_YEAR, POSITION_LABELS } from "@/lib/team";
+import {
+  CUSTOM_POSITION_MAX_LENGTH,
+  CUSTOM_YEAR_MAX_LENGTH,
+  EXECUTIVE_POSITIONS,
+  HOME_TEAM_LIMIT,
+  OTHER_YEAR,
+  POSITION_LABELS,
+} from "@/lib/team";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
@@ -87,14 +94,14 @@ export function MemberForm({
             </Select>
           </Field>
           <Field
-            label="Academic year"
+            label="Current Status"
             name="academicYear"
             required
             error={e.academicYear}
             hint={committee ? "Each year has 4 committee seats." : undefined}
           >
             <Select name="academicYear" value={year} onChange={(ev) => setYear(ev.target.value)} error={e.academicYear} hasHint={committee}>
-              <option value="" disabled>Select academic year</option>
+              <option value="" disabled>Select current status</option>
               <option value="1">1st Year</option>
               <option value="2">2nd Year</option>
               <option value="3">3rd Year</option>
@@ -108,7 +115,7 @@ export function MemberForm({
               name="customYear"
               required
               error={e.customYear}
-              hint={`Shown instead of the academic year. ${customYear.length}/${CUSTOM_YEAR_MAX_LENGTH} characters`}
+              hint={`Shown as the current status. ${customYear.length}/${CUSTOM_YEAR_MAX_LENGTH} characters`}
               className="sm:col-span-3"
             >
               <Input
@@ -178,7 +185,10 @@ export function MemberForm({
         </div>
       </Card>
 
-      <Card title="Display" description="New members appear at the end of their section. Change the order from Team members → Display order.">
+      <Card
+        title="Display"
+        description={`New members appear at the end of their section; change the order from Team members → Display order. The homepage shows up to ${HOME_TEAM_LIMIT} featured members of the current term.`}
+      >
         <Checkbox name="featuredOnHome" defaultChecked={member?.featuredOnHome ?? false} label="Feature on the homepage" />
       </Card>
 

@@ -103,15 +103,26 @@ export function WhatWeDo({ data }: { data: SiteSettings["whatWeDo"] }) {
   );
 }
 
-export function UpcomingEvents({ eyebrow, heading, events }: { eyebrow: string; heading: string; events: Omit<EventCardData, "isUpcoming">[] }) {
+export function UpcomingEvents({
+  eyebrow,
+  heading,
+  events,
+  upcoming,
+}: {
+  eyebrow: string;
+  heading: string;
+  events: Omit<EventCardData, "isUpcoming">[];
+  /** False when nothing is coming up and these are recent past events. */
+  upcoming: boolean;
+}) {
   return (
     <section aria-labelledby="events-heading" className="py-24 sm:py-32">
       <div className="container-page">
         <FadeUp>
           <SectionHeading
-            eyebrow={eyebrow}
+            eyebrow={upcoming ? eyebrow : "Recent Events"}
             title={<span id="events-heading">{heading}</span>}
-            action={<ArrowLink href="/events">Explore upcoming ARICT events</ArrowLink>}
+            action={<ArrowLink href="/events">{upcoming ? "Explore upcoming ARICT events" : "Explore all ARICT events"}</ArrowLink>}
           />
         </FadeUp>
         {events.length > 0 ? (

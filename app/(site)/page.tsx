@@ -11,9 +11,9 @@ import {
 import { JsonLd } from "@/components/seo/json-ld";
 import {
   getFeaturedProjects,
+  getHomeEvents,
   getHomeTeam,
   getSiteSettings,
-  getUpcomingEvents,
 } from "@/lib/data/public";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -36,9 +36,9 @@ export default async function HomePage() {
   const settings = await getSiteSettings();
   const { homeSections } = settings;
   const [events, projects, team] = await Promise.all([
-    getUpcomingEvents(homeSections.eventsCount),
+    getHomeEvents(homeSections.eventsCount),
     getFeaturedProjects(homeSections.projectsCount),
-    getHomeTeam(homeSections.teamMode),
+    getHomeTeam(),
   ]);
 
   return (
@@ -47,7 +47,7 @@ export default async function HomePage() {
       <Hero hero={settings.hero} />
       <AboutPreview about={settings.aboutPreview} stats={settings.stats} />
       <WhatWeDo data={settings.whatWeDo} />
-      <UpcomingEvents eyebrow={homeSections.eventsEyebrow} heading={homeSections.eventsHeading} events={events} />
+      <UpcomingEvents eyebrow={homeSections.eventsEyebrow} heading={homeSections.eventsHeading} events={events.events} upcoming={events.upcoming} />
       <FeaturedProjects eyebrow={homeSections.projectsEyebrow} heading={homeSections.projectsHeading} projects={projects} />
       <TeamPreview eyebrow={homeSections.teamEyebrow} heading={homeSections.teamHeading} members={team} />
     </>

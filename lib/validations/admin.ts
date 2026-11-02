@@ -102,7 +102,7 @@ export const teamMemberSchema = z
     fullName: requiredText("Full name", 120, 2),
     position: z.enum(teamPosition.enumValues, { error: "Choose a position." }),
     customPosition: optionalText(CUSTOM_POSITION_MAX_LENGTH, "Position title"),
-    academicYear: z.coerce.number().int().min(OTHER_YEAR, "Choose an academic year.").max(4, "Choose an academic year."),
+    academicYear: z.coerce.number().int().min(OTHER_YEAR, "Choose the current status.").max(4, "Choose the current status."),
     customYear: optionalText(CUSTOM_YEAR_MAX_LENGTH, "Year details"),
     image: optionalImage,
     linkedinUrl: optionalUrl("LinkedIn URL"),

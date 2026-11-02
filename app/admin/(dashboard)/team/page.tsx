@@ -8,7 +8,7 @@ import { LinkButton } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/misc";
 import { requirePage } from "@/lib/auth/session";
 import { getTermMembers, listTerms } from "@/lib/data/admin";
-import { ACADEMIC_YEAR_LABELS, COMMITTEE_LIMIT_PER_YEAR, COMMITTEE_YEARS, EXECUTIVE_POSITIONS, POSITION_LABELS, positionLabel, yearLabel } from "@/lib/team";
+import { ACADEMIC_YEAR_LABELS, COMMITTEE_LIMIT_PER_YEAR, COMMITTEE_YEARS, EXECUTIVE_POSITIONS, HOME_TEAM_LIMIT, POSITION_LABELS, positionLabel, yearLabel } from "@/lib/team";
 import { cn } from "@/lib/utils";
 
 // Reads the session and live data on every request; blocking navigation is intended.
@@ -37,6 +37,7 @@ export default async function AdminTeamPage({ searchParams }: PageProps<"/admin/
 
   const members = await getTermMembers(selected.id);
   const byPosition = new Map(members.map((m) => [m.position, m]));
+  const featuredCount = members.filter((m) => m.featuredOnHome).length;
   const committeeCount = (y: number) => members.filter((m) => m.position === "committee_member" && m.academicYear === y).length;
 
   return (
@@ -106,6 +107,17 @@ export default async function AdminTeamPage({ searchParams }: PageProps<"/admin/
         </Card>
       </div>
 
+      {members.length > 0 && (
+        <p className="mb-4 rounded-xl bg-mist px-4 py-3 text-sm text-muted">
+          <strong className="font-medium text-ink">Homepage: </strong>
+          {!selected.isCurrent
+            ? "only the current term is shown on the homepage."
+            : featuredCount > 0
+              ? `showing the ${featuredCount} member${featuredCount === 1 ? "" : "s"} marked “On homepage” (up to ${HOME_TEAM_LIMIT}).`
+              : `no one is featured, so it shows the President, Vice President, Secretary and Senior Treasurer. Use “Feature on homepage” to choose up to ${HOME_TEAM_LIMIT} members instead.`}
+        </p>
+      )}
+
       {members.length === 0 ? (
         <AdminEmpty title="No members in this term yet." action={<LinkButton href={`/admin/team/new?term=${selected.id}`} variant="dark" size="sm">Add the first member</LinkButton>} />
       ) : (
@@ -114,7 +126,7 @@ export default async function AdminTeamPage({ searchParams }: PageProps<"/admin/
             <tr>
               <Th>Member</Th>
               <Th>Position</Th>
-              <Th>Year</Th>
+              <Th>Current status</Th>
               <Th className="text-right">Actions</Th>
             </tr>
           </thead>

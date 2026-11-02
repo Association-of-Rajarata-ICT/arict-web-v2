@@ -211,12 +211,11 @@ export function SettingsForms({ tab, settings }: { tab: SettingsKey | "homepage"
                 </Field>
                 <T name="teamEyebrow" label="Team eyebrow" value={s.homeSections.teamEyebrow} error={e.teamEyebrow} />
                 <T name="teamHeading" label="Team heading" value={s.homeSections.teamHeading} error={e.teamHeading} required />
-                <Field label="Team members shown" name="teamMode">
-                  <Select name="teamMode" defaultValue={s.homeSections.teamMode}>
-                    <option value="leadership">President, VP, Secretary, Sr. Treasurer</option>
-                    <option value="featured">Members marked “Feature on homepage”</option>
-                  </Select>
-                </Field>
+                <p className="rounded-xl bg-mist px-4 py-3 text-sm text-muted sm:col-span-2">
+                  The homepage shows team members ticked <strong className="font-medium text-ink">Feature on homepage</strong> (up to 4,
+                  set in Team members). When none are ticked, it shows the President, Vice President, Secretary and Senior Treasurer.
+                  Events show upcoming ones first (featured first); when none are coming up, recent events are shown.
+                </p>
               </div>
             </Card>
           )}

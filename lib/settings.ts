@@ -117,7 +117,6 @@ export const settingsSchemas = {
     projectsCount: z.coerce.number().int().min(1).max(6),
     teamEyebrow: text(40),
     teamHeading: text(120).min(1),
-    teamMode: z.enum(["featured", "leadership"]),
   }),
   joinCta: z.object({
     eyebrow: text(40),
@@ -233,7 +232,6 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     projectsCount: 3,
     teamEyebrow: "Our Team",
     teamHeading: "Meet the People Behind ARICT.",
-    teamMode: "leadership",
   },
   joinCta: {
     eyebrow: "Join Our Journey",

@@ -37,7 +37,10 @@ export const POSITION_ORDER: Record<TeamPosition, number> = Object.fromEntries(
   [...EXECUTIVE_POSITIONS, "other", "committee_member"].map((p, i) => [p, i]),
 ) as Record<TeamPosition, number>;
 
-/** Leadership shown at the top of the team page and (by default) on the homepage. */
+/** How many members the homepage Team section shows. */
+export const HOME_TEAM_LIMIT = 4;
+
+/** Shown on the homepage when no member is ticked "Feature on homepage". */
 export const LEADERSHIP_POSITIONS: TeamPosition[] = [
   "president",
   "vice_president",

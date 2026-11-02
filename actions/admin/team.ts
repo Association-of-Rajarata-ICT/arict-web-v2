@@ -5,7 +5,15 @@ import { db } from "@/lib/db";
 import { isUuid } from "@/lib/data/admin";
 import { teamMembers, teamTerms } from "@/lib/db/schema";
 import { invalidate } from "@/lib/revalidate";
-import { ACADEMIC_YEAR_LABELS, COMMITTEE_LIMIT_PER_YEAR, POSITION_LABELS, isExecutive, isSingleHolderPosition, memberSection } from "@/lib/team";
+import {
+  ACADEMIC_YEAR_LABELS,
+  COMMITTEE_LIMIT_PER_YEAR,
+  HOME_TEAM_LIMIT,
+  POSITION_LABELS,
+  isExecutive,
+  isSingleHolderPosition,
+  memberSection,
+} from "@/lib/team";
 import { fieldErrorsFrom, formToObject, type ActionState } from "@/lib/validations/common";
 import { teamMemberSchema, teamTermSchema } from "@/lib/validations/admin";
 import { adminAction, fail, isUniqueViolation, ok } from "./_helpers";
@@ -118,6 +126,10 @@ export async function saveMember(_prev: ActionState, formData: FormData): Promis
           }
         }
 
+        if (data.featuredOnHome && (await homepageIsFull(tx, data.teamTermId, id || undefined))) {
+          return fail(HOMEPAGE_FULL, { featuredOnHome: HOMEPAGE_FULL });
+        }
+
         // New members, and members moved to another section, go to the end of their section.
         const [{ last }] = await tx
           .select({ last: max(teamMembers.displayOrder) })
@@ -195,11 +207,32 @@ export async function deleteMember(_prev: ActionState, formData: FormData): Prom
 
 export async function toggleMemberFeatured(_prev: ActionState, formData: FormData): Promise<ActionState> {
   return adminAction("content", async () => {
-    await db
-      .update(teamMembers)
-      .set({ featuredOnHome: formData.get("value") === "true" })
-      .where(eq(teamMembers.id, String(formData.get("id") ?? "")));
+    const id = String(formData.get("id") ?? "");
+    const featuredOnHome = formData.get("value") === "true";
+    if (featuredOnHome) {
+      const [member] = await db.select({ teamTermId: teamMembers.teamTermId }).from(teamMembers).where(eq(teamMembers.id, id));
+      if (!member) return fail("This member no longer exists.");
+      if (await homepageIsFull(db, member.teamTermId, id)) return fail(HOMEPAGE_FULL);
+    }
+    await db.update(teamMembers).set({ featuredOnHome }).where(eq(teamMembers.id, id));
     invalidate("team");
     return ok();
   });
+}
+
+const HOMEPAGE_FULL = `The homepage shows up to ${HOME_TEAM_LIMIT} members. Remove one from the homepage first.`;
+
+/** Whether a term already has the most members featured on the homepage (not counting `exceptId`). */
+async function homepageIsFull(conn: Pick<typeof db, "select">, termId: string, exceptId?: string) {
+  const [{ n }] = await conn
+    .select({ n: count() })
+    .from(teamMembers)
+    .where(
+      and(
+        eq(teamMembers.teamTermId, termId),
+        eq(teamMembers.featuredOnHome, true),
+        exceptId ? ne(teamMembers.id, exceptId) : undefined,
+      ),
+    );
+  return n >= HOME_TEAM_LIMIT;
 }
