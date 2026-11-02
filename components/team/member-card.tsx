@@ -1,14 +1,14 @@
 import Image from "next/image";
 import { Globe } from "lucide-react";
 import type { PublicMember } from "@/lib/data/public";
-import { ACADEMIC_YEAR_LABELS, POSITION_LABELS } from "@/lib/team";
+import { ACADEMIC_YEAR_LABELS, positionLabel } from "@/lib/team";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/misc";
 import { LinkedinIcon } from "@/components/ui/social-icons";
 
 type Member = Pick<
   PublicMember,
-  "fullName" | "position" | "academicYear" | "image" | "linkedinUrl" | "portfolioUrl"
+  "fullName" | "position" | "customPosition" | "academicYear" | "image" | "linkedinUrl" | "portfolioUrl"
 >;
 
 export function MemberLinks({ member, className }: { member: Member; className?: string }) {
@@ -50,7 +50,7 @@ export function MemberCard({
   const role =
     member.position === "committee_member"
       ? `${ACADEMIC_YEAR_LABELS[member.academicYear]} Committee Member`
-      : POSITION_LABELS[member.position];
+      : positionLabel(member);
 
   const large = variant === "large";
   const compact = variant === "compact";

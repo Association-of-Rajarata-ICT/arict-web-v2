@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { saveMember, saveTerm } from "@/actions/admin/team";
 import type { TeamMember, TeamPosition, TeamTerm } from "@/lib/db/schema";
-import { EXECUTIVE_POSITIONS, POSITION_LABELS } from "@/lib/team";
+import { CUSTOM_POSITION_MAX_LENGTH, EXECUTIVE_POSITIONS, POSITION_LABELS } from "@/lib/team";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
@@ -20,14 +20,24 @@ export function MemberForm({
   terms: Pick<TeamTerm, "id" | "title" | "isCurrent">[];
   defaultTermId?: string;
 }) {
-  const { state, onSubmit, pending } = useFormAction(saveMember, { successHref: "/admin/team" });
-  const [position, setPosition] = useState<TeamPosition | "">(member?.position ?? "committee_member");
+  const defaultPosition = member?.position ?? "committee_member";
+  const defaultCustom = member?.customPosition ?? "";
+  const [position, setPosition] = useState<TeamPosition | "">(defaultPosition);
+  const [customPosition, setCustomPosition] = useState(defaultCustom);
+  const { state, onSubmit, pending, formKey } = useFormAction(saveMember, {
+    successHref: "/admin/team",
+    onClear: () => {
+      setPosition(defaultPosition);
+      setCustomPosition(defaultCustom);
+    },
+    version: member?.updatedAt,
+  });
   const [uploading, setUploading] = useState(false);
   const e = state.fieldErrors ?? {};
   const committee = position === "committee_member";
 
   return (
-    <form onSubmit={onSubmit} onReset={() => setPosition("")} noValidate className="space-y-6">
+    <form key={formKey} onSubmit={onSubmit} noValidate className="space-y-6">
       {member && <input type="hidden" name="id" value={member.id} />}
       {state.message && <FormMessage tone={state.ok ? "success" : "error"}>{state.message}</FormMessage>}
 
@@ -56,6 +66,9 @@ export function MemberForm({
               <optgroup label="Committee">
                 <option value="committee_member">Committee Member</option>
               </optgroup>
+              <optgroup label="Other">
+                <option value="other">Other (type a position)</option>
+              </optgroup>
             </Select>
           </Field>
           <Field
@@ -73,6 +86,28 @@ export function MemberForm({
               {!committee && <option value="4">4th Year</option>}
             </Select>
           </Field>
+          {position === "other" && (
+            <Field
+              label="Position title"
+              name="customPosition"
+              required
+              error={e.customPosition}
+              hint={`Shown on the Team page with the Executive Committee. ${customPosition.length}/${CUSTOM_POSITION_MAX_LENGTH} characters`}
+              className="sm:col-span-3"
+            >
+              <Input
+                name="customPosition"
+                value={customPosition}
+                onChange={(ev) => setCustomPosition(ev.target.value)}
+                required
+                maxLength={CUSTOM_POSITION_MAX_LENGTH}
+                placeholder="e.g. Media Coordinator"
+                autoFocus={!member?.customPosition}
+                error={e.customPosition}
+                hasHint
+              />
+            </Field>
+          )}
         </div>
       </Card>
 
@@ -107,13 +142,8 @@ export function MemberForm({
         </div>
       </Card>
 
-      <Card title="Display">
-        <div className="flex flex-wrap items-end gap-6">
-          <Field label="Display order" name="displayOrder" error={e.displayOrder} className="w-36">
-            <Input name="displayOrder" type="number" min={0} max={999} defaultValue={member?.displayOrder ?? 0} error={e.displayOrder} />
-          </Field>
-          <Checkbox name="featuredOnHome" defaultChecked={member?.featuredOnHome ?? false} label="Feature on the homepage" className="pb-3" />
-        </div>
+      <Card title="Display" description="New members appear at the end of their section. Change the order from Team members → Display order.">
+        <Checkbox name="featuredOnHome" defaultChecked={member?.featuredOnHome ?? false} label="Feature on the homepage" />
       </Card>
 
       <div className="sticky bottom-4 z-10 flex justify-end">

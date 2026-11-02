@@ -293,6 +293,7 @@ const memberFields = {
   id: teamMembers.id,
   fullName: teamMembers.fullName,
   position: teamMembers.position,
+  customPosition: teamMembers.customPosition,
   academicYear: teamMembers.academicYear,
   image: teamMembers.image,
   linkedinUrl: teamMembers.linkedinUrl,

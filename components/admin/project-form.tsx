@@ -14,6 +14,7 @@ import { TitleSlugFields } from "./slug-field";
 
 export type ProjectFormValues = {
   id?: string;
+  updatedAt?: Date;
   title: string;
   slug: string;
   excerpt: string;
@@ -47,13 +48,13 @@ export function ProjectForm({
   submitLabel?: string;
   showVisibility?: boolean;
 }) {
-  const { state, onSubmit, pending } = useFormAction(action, { successHref: "/admin/projects" });
+  const { state, onSubmit, pending, formKey } = useFormAction(action, { successHref: "/admin/projects", version: project?.updatedAt });
   const [uploading, setUploading] = useState(0);
   const e = state.fieldErrors ?? {};
   const onBusy = (b: boolean) => setUploading((n) => Math.max(0, n + (b ? 1 : -1)));
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-6">
+    <form key={formKey} onSubmit={onSubmit} noValidate className="space-y-6">
       {project?.id && <input type="hidden" name="id" value={project.id} />}
       {Object.entries(extraFields ?? {}).map(([k, v]) => (
         <input key={k} type="hidden" name={k} value={v} />

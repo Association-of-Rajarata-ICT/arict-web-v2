@@ -1,10 +1,11 @@
 "use server";
 
-import { and, count, eq, ne } from "drizzle-orm";
+import { and, asc, count, eq, max, ne, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
+import { isUuid } from "@/lib/data/admin";
 import { teamMembers, teamTerms } from "@/lib/db/schema";
 import { invalidate } from "@/lib/revalidate";
-import { ACADEMIC_YEAR_LABELS, COMMITTEE_LIMIT_PER_YEAR, POSITION_LABELS, isExecutive } from "@/lib/team";
+import { ACADEMIC_YEAR_LABELS, COMMITTEE_LIMIT_PER_YEAR, POSITION_LABELS, isExecutive, isSingleHolderPosition, memberSection } from "@/lib/team";
 import { fieldErrorsFrom, formToObject, type ActionState } from "@/lib/validations/common";
 import { teamMemberSchema, teamTermSchema } from "@/lib/validations/admin";
 import { adminAction, fail, isUniqueViolation, ok } from "./_helpers";
@@ -83,7 +84,7 @@ export async function saveMember(_prev: ActionState, formData: FormData): Promis
         if (!term) return fail("Choose a valid committee term.", { teamTermId: "Choose a committee term." });
 
         const others = id ? ne(teamMembers.id, id) : undefined;
-        if (isExecutive(data.position)) {
+        if (isSingleHolderPosition(data.position)) {
           const [holder] = await tx
             .select({ name: teamMembers.fullName })
             .from(teamMembers)
@@ -93,7 +94,7 @@ export async function saveMember(_prev: ActionState, formData: FormData): Promis
             const msg = `${POSITION_LABELS[data.position]} is already held by ${holder.name} in this term.`;
             return fail(msg, { position: msg });
           }
-        } else {
+        } else if (!isExecutive(data.position)) {
           const [{ n }] = await tx
             .select({ n: count() })
             .from(teamMembers)
@@ -111,12 +112,27 @@ export async function saveMember(_prev: ActionState, formData: FormData): Promis
           }
         }
 
+        // New members, and members moved to another section, go to the end of their section.
+        const [{ last }] = await tx
+          .select({ last: max(teamMembers.displayOrder) })
+          .from(teamMembers)
+          .where(eq(teamMembers.teamTermId, data.teamTermId));
+        const endOfList = (last ?? -1) + 1;
+
         if (id) {
-          const updated = await tx.update(teamMembers).set(data).where(eq(teamMembers.id, id)).returning({ id: teamMembers.id });
-          if (!updated.length) return fail("This member no longer exists.");
+          const [current] = await tx
+            .select({ teamTermId: teamMembers.teamTermId, position: teamMembers.position, academicYear: teamMembers.academicYear })
+            .from(teamMembers)
+            .where(eq(teamMembers.id, id));
+          if (!current) return fail("This member no longer exists.");
+          const moved = current.teamTermId !== data.teamTermId || memberSection(current) !== memberSection(data);
+          await tx
+            .update(teamMembers)
+            .set(moved ? { ...data, displayOrder: endOfList } : data)
+            .where(eq(teamMembers.id, id));
           return ok("Member saved.");
         }
-        await tx.insert(teamMembers).values(data);
+        await tx.insert(teamMembers).values({ ...data, displayOrder: endOfList });
         return null;
       });
       if (result) {
@@ -129,6 +145,37 @@ export async function saveMember(_prev: ActionState, formData: FormData): Promis
     }
     invalidate("team");
     return ok("Member added.");
+  });
+}
+
+/**
+ * Saves the order of a term's members from the "order" fields (member IDs, top to bottom).
+ * Sections stay fixed on the public page, so only the order within each section matters.
+ * Members missing from the list (e.g. added meanwhile) keep their place after the listed ones.
+ */
+export async function saveMemberOrder(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  return adminAction("content", async () => {
+    const termId = String(formData.get("termId") ?? "");
+    const ids = formData.getAll("order").map(String);
+    if (!isUuid(termId) || ids.length === 0 || ids.length > 500 || !ids.every(isUuid) || new Set(ids).size !== ids.length) {
+      return fail("Couldn't read the new order. Refresh the page and try again.");
+    }
+
+    const rows = await db
+      .select({ id: teamMembers.id })
+      .from(teamMembers)
+      .where(eq(teamMembers.teamTermId, termId))
+      .orderBy(asc(teamMembers.displayOrder));
+    const listed = new Set(ids);
+    const order = [...ids, ...rows.map((r) => r.id).filter((id) => !listed.has(id))];
+
+    await db.execute(sql`
+      update ${teamMembers} set display_order = v.ord - 1
+      from unnest(array[${sql.join(order.map((id) => sql`${id}`), sql`, `)}]::uuid[]) with ordinality as v(id, ord)
+      where ${teamMembers.id} = v.id and ${teamMembers.teamTermId} = ${termId}
+    `);
+    invalidate("team");
+    return ok("Display order saved.");
   });
 }
 

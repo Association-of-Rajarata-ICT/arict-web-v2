@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { eventStatus, joinStatus, projectStatus, submissionStatus, teamPosition } from "../db/schema";
+import { CUSTOM_POSITION_MAX_LENGTH, POSITION_LABELS } from "../team";
 import { otherCategoryFields, resolveOtherCategory, validateOtherCategory } from "./other-category";
 import {
   checkbox,
@@ -95,17 +96,33 @@ export const teamTermSchema = z
     path: ["endDate"],
   });
 
-export const teamMemberSchema = z.object({
-  teamTermId: z.uuid("Choose a committee term."),
-  fullName: requiredText("Full name", 120, 2),
-  position: z.enum(teamPosition.enumValues, { error: "Choose a position." }),
-  academicYear: z.coerce.number().int().min(1, "Choose an academic year.").max(4),
-  image: optionalImage,
-  linkedinUrl: optionalUrl("LinkedIn URL"),
-  portfolioUrl: optionalUrl("Portfolio URL"),
-  displayOrder: z.coerce.number().int().min(0).max(999).default(0),
-  featuredOnHome: checkbox,
-});
+export const teamMemberSchema = z
+  .object({
+    teamTermId: z.uuid("Choose a committee term."),
+    fullName: requiredText("Full name", 120, 2),
+    position: z.enum(teamPosition.enumValues, { error: "Choose a position." }),
+    customPosition: optionalText(CUSTOM_POSITION_MAX_LENGTH, "Position title"),
+    academicYear: z.coerce.number().int().min(1, "Choose an academic year.").max(4),
+    image: optionalImage,
+    linkedinUrl: optionalUrl("LinkedIn URL"),
+    portfolioUrl: optionalUrl("Portfolio URL"),
+    featuredOnHome: checkbox,
+  })
+  .superRefine((v, ctx) => {
+    if (v.position !== "other") return;
+    if (!v.customPosition) {
+      ctx.addIssue({ code: "custom", path: ["customPosition"], message: "Enter the position title." });
+      return;
+    }
+    const listed = Object.entries(POSITION_LABELS).find(
+      ([key, label]) => key !== "other" && label.toLowerCase() === v.customPosition!.toLowerCase(),
+    );
+    if (listed) {
+      ctx.addIssue({ code: "custom", path: ["customPosition"], message: `Choose “${listed[1]}” from the list instead.` });
+    }
+  })
+  // The title only belongs to "Other" positions.
+  .transform((v) => ({ ...v, customPosition: v.position === "other" ? v.customPosition : null }));
 
 export const submissionReviewSchema = z.object({
   id: z.uuid(),

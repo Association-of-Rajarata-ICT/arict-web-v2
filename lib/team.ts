@@ -1,4 +1,5 @@
 import type { TeamPosition } from "./db/schema";
+import { OTHER_TEXT_MAX_LENGTH } from "./form-options";
 
 export const EXECUTIVE_POSITIONS = [
   "president",
@@ -21,10 +22,19 @@ export const POSITION_LABELS: Record<TeamPosition, string> = {
   editor: "Editor",
   junior_editor: "Junior Editor",
   committee_member: "Committee Member",
+  other: "Other",
 };
 
+/** Longest title an admin can type for an "Other" position. */
+export const CUSTOM_POSITION_MAX_LENGTH = OTHER_TEXT_MAX_LENGTH;
+
+/** The title shown for a member: the typed-in title for "Other" positions. */
+export function positionLabel(m: { position: TeamPosition; customPosition?: string | null }) {
+  return m.position === "other" ? m.customPosition || POSITION_LABELS.other : POSITION_LABELS[m.position];
+}
+
 export const POSITION_ORDER: Record<TeamPosition, number> = Object.fromEntries(
-  [...EXECUTIVE_POSITIONS, "committee_member"].map((p, i) => [p, i]),
+  [...EXECUTIVE_POSITIONS, "other", "committee_member"].map((p, i) => [p, i]),
 ) as Record<TeamPosition, number>;
 
 /** Leadership shown at the top of the team page and (by default) on the homepage. */
@@ -45,22 +55,50 @@ export const ACADEMIC_YEAR_LABELS: Record<number, string> = {
   4: "4th Year",
 };
 
+/** Executive roles, including custom "Other" roles: shown in the Executive Committee, any academic year. */
 export function isExecutive(position: TeamPosition) {
   return position !== "committee_member";
 }
 
-type Sortable = { position: TeamPosition; displayOrder: number; fullName: string };
+/** Fixed executive positions can be held by only one member per term; custom roles can repeat. */
+export function isSingleHolderPosition(position: TeamPosition) {
+  return (EXECUTIVE_POSITIONS as readonly TeamPosition[]).includes(position);
+}
 
+/** Sections of the public Team page, in page order. Admins set the order of members within each one. */
+export const TEAM_SECTIONS = [
+  { id: "leadership", label: "Leadership" },
+  { id: "executive", label: "Executive Committee" },
+  { id: "year-1", label: "1st Year Committee Members" },
+  { id: "year-2", label: "2nd Year Committee Members" },
+  { id: "year-3", label: "3rd Year Committee Members" },
+] as const;
+
+export type TeamSectionId = (typeof TEAM_SECTIONS)[number]["id"];
+
+const SECTION_RANK: Record<string, number> = Object.fromEntries(TEAM_SECTIONS.map((s, i) => [s.id, i]));
+
+export function memberSection(m: { position: TeamPosition; academicYear: number }): TeamSectionId {
+  if (m.position === "president" || m.position === "vice_president") return "leadership";
+  if (isExecutive(m.position)) return "executive";
+  return `year-${m.academicYear}` as TeamSectionId;
+}
+
+type Sortable = { position: TeamPosition; academicYear: number; displayOrder: number; fullName: string };
+
+/** Section first, then the admin-set display order; position and name break ties. */
 export function sortMembers<T extends Sortable>(members: T[]) {
+  const rank = (m: T) => SECTION_RANK[memberSection(m)] ?? TEAM_SECTIONS.length;
   return [...members].sort(
     (a, b) =>
-      POSITION_ORDER[a.position] - POSITION_ORDER[b.position] ||
+      rank(a) - rank(b) ||
       a.displayOrder - b.displayOrder ||
+      POSITION_ORDER[a.position] - POSITION_ORDER[b.position] ||
       a.fullName.localeCompare(b.fullName),
   );
 }
 
-export function groupTerm<T extends Sortable & { academicYear: number }>(members: T[]) {
+export function groupTerm<T extends Sortable>(members: T[]) {
   const sorted = sortMembers(members);
   return {
     executive: sorted.filter((m) => isExecutive(m.position)),

@@ -21,9 +21,9 @@ export function ReviewForm({
   options: { value: string; label: string; disabled?: boolean }[];
   successHref: string;
 }) {
-  const { state, onSubmit, pending } = useFormAction(action, { successHref });
+  const { state, onSubmit, pending, formKey } = useFormAction(action, { successHref, version: `${status}:${notes ?? ""}` });
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form key={formKey} onSubmit={onSubmit} className="space-y-4">
       <input type="hidden" name="id" value={id} />
       {state.message && <FormMessage tone={state.ok ? "success" : "error"}>{state.message}</FormMessage>}
       <Field label="Status" name="status" required>

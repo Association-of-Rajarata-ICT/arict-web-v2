@@ -1,13 +1,13 @@
 import type { PublicMember } from "@/lib/data/public";
-import { ACADEMIC_YEAR_LABELS, COMMITTEE_LIMIT_PER_YEAR, COMMITTEE_YEARS, groupTerm } from "@/lib/team";
+import { ACADEMIC_YEAR_LABELS, COMMITTEE_LIMIT_PER_YEAR, COMMITTEE_YEARS, groupTerm, memberSection } from "@/lib/team";
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/motion/reveal";
 import { MemberCard } from "./member-card";
 
 /** Full committee layout: leadership, executive committee and year-wise committee members. */
 export function TermRoster({ members, current }: { members: PublicMember[]; current: boolean }) {
   const { executive, committee } = groupTerm(members);
-  const leaders = executive.filter((m) => m.position === "president" || m.position === "vice_president");
-  const otherExec = executive.filter((m) => m.position !== "president" && m.position !== "vice_president");
+  const leaders = executive.filter((m) => memberSection(m) === "leadership");
+  const otherExec = executive.filter((m) => memberSection(m) === "executive");
   const prefix = current ? "Current " : "";
 
   return (

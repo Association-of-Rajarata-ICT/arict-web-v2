@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { ArrowUpDown, Plus } from "lucide-react";
 import { deleteMember, toggleMemberFeatured } from "@/actions/admin/team";
 import { ActionButton } from "@/components/admin/action-button";
+import { TermTabs } from "@/components/admin/term-tabs";
 import { AdminEmpty, AdminHeader, Card, Notice, StatusBadge, Table, Td, Th, param } from "@/components/admin/ui";
 import { LinkButton } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/misc";
 import { requirePage } from "@/lib/auth/session";
 import { getTermMembers, listTerms } from "@/lib/data/admin";
-import { ACADEMIC_YEAR_LABELS, COMMITTEE_LIMIT_PER_YEAR, COMMITTEE_YEARS, EXECUTIVE_POSITIONS, POSITION_LABELS } from "@/lib/team";
+import { ACADEMIC_YEAR_LABELS, COMMITTEE_LIMIT_PER_YEAR, COMMITTEE_YEARS, EXECUTIVE_POSITIONS, POSITION_LABELS, positionLabel } from "@/lib/team";
 import { cn } from "@/lib/utils";
 
 // Reads the session and live data on every request; blocking navigation is intended.
@@ -48,6 +49,11 @@ export default async function AdminTeamPage({ searchParams }: PageProps<"/admin/
             <LinkButton href="/admin/team/terms" variant="outline" size="sm">
               Manage terms
             </LinkButton>
+            {members.length > 1 && (
+              <LinkButton href={`/admin/team/order?term=${selected.id}`} variant="outline" size="sm">
+                <ArrowUpDown aria-hidden className="size-4" /> Display order
+              </LinkButton>
+            )}
             <LinkButton href={`/admin/team/new?term=${selected.id}`} variant="dark" size="sm">
               <Plus aria-hidden className="size-4" /> Add member
             </LinkButton>
@@ -56,22 +62,7 @@ export default async function AdminTeamPage({ searchParams }: PageProps<"/admin/
       />
       <Notice searchParams={sp} />
 
-      <nav aria-label="Committee terms" className="mb-6 flex flex-wrap gap-2">
-        {terms.map((t) => (
-          <Link
-            key={t.id}
-            href={`/admin/team?term=${t.id}`}
-            aria-current={t.id === selected.id ? "page" : undefined}
-            className={cn(
-              "inline-flex h-9 items-center gap-2 rounded-full border px-4 text-sm font-medium",
-              t.id === selected.id ? "border-ink bg-ink text-paper" : "border-line bg-surface hover:bg-mist",
-            )}
-          >
-            {t.title}
-            {t.isCurrent && <span className={cn("size-1.5 rounded-full", t.id === selected.id ? "bg-surface" : "bg-brand")} aria-label="current" />}
-          </Link>
-        ))}
-      </nav>
+      <TermTabs terms={terms} selectedId={selected.id} basePath="/admin/team" />
 
       <div className="mb-8 grid gap-4 lg:grid-cols-3">
         <Card title="Executive Committee" description={`${EXECUTIVE_POSITIONS.filter((p) => byPosition.has(p)).length}/8 filled`} className="lg:col-span-2">
@@ -124,7 +115,6 @@ export default async function AdminTeamPage({ searchParams }: PageProps<"/admin/
               <Th>Member</Th>
               <Th>Position</Th>
               <Th>Year</Th>
-              <Th>Order</Th>
               <Th className="text-right">Actions</Th>
             </tr>
           </thead>
@@ -146,9 +136,8 @@ export default async function AdminTeamPage({ searchParams }: PageProps<"/admin/
                     </div>
                   </div>
                 </Td>
-                <Td>{POSITION_LABELS[m.position]}</Td>
+                <Td>{positionLabel(m)}</Td>
                 <Td>{ACADEMIC_YEAR_LABELS[m.academicYear]}</Td>
-                <Td className="tabular-nums text-muted">{m.displayOrder}</Td>
                 <Td>
                   <div className="flex flex-wrap justify-end gap-1.5">
                     <ActionButton action={toggleMemberFeatured} fields={{ id: m.id, value: String(!m.featuredOnHome) }}>

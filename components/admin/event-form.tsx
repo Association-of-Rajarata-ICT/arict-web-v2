@@ -21,14 +21,14 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 export function EventForm({ event, categories }: { event?: Event & { images: EventImage[] }; categories: string[] }) {
-  const { state, onSubmit, pending } = useFormAction(saveEvent, { successHref: "/admin/events" });
+  const { state, onSubmit, pending, formKey } = useFormAction(saveEvent, { successHref: "/admin/events", version: event?.updatedAt });
   const [uploading, setUploading] = useState(0);
   const e = state.fieldErrors ?? {};
   const onBusy = (b: boolean) => setUploading((n) => Math.max(0, n + (b ? 1 : -1)));
   const allCategories = [...new Set([...EVENT_CATEGORIES, ...categories])];
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-6">
+    <form key={formKey} onSubmit={onSubmit} noValidate className="space-y-6">
       {event && <input type="hidden" name="id" value={event.id} />}
       {state.message && <FormMessage tone={state.ok ? "success" : "error"}>{state.message}</FormMessage>}
 

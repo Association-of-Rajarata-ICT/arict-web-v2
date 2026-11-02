@@ -66,6 +66,8 @@ export const teamPosition = pgEnum("team_position", [
   "editor",
   "junior_editor",
   "committee_member",
+  // A role typed in by an admin; its title is stored in team_members.custom_position.
+  "other",
 ]);
 
 /* ----------------------------------------------------------------------------
@@ -191,6 +193,7 @@ export const teamMembers = pgTable(
       .references(() => teamTerms.id, { onDelete: "restrict" }),
     fullName: varchar("full_name", { length: 120 }).notNull(),
     position: teamPosition("position").notNull(),
+    customPosition: varchar("custom_position", { length: 60 }),
     academicYear: integer("academic_year").notNull(),
     image: text("image"),
     bio: varchar("bio", { length: 400 }),
@@ -204,10 +207,13 @@ export const teamMembers = pgTable(
   },
   (t) => [
     index("team_members_term_idx").on(t.teamTermId, t.displayOrder),
-    // Each executive position may be held by only one member per term.
+    // Each executive position may be held by only one member per term
+    // (committee members and custom "other" roles can repeat).
     uniqueIndex("team_members_exec_unique")
       .on(t.teamTermId, t.position)
-      .where(sql`${t.position} <> 'committee_member'`),
+      .where(
+        sql`${t.position} in ('president', 'vice_president', 'secretary', 'vice_secretary', 'senior_treasurer', 'junior_treasurer', 'editor', 'junior_editor')`,
+      ),
   ],
 );
 

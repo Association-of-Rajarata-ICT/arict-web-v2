@@ -11,12 +11,12 @@ import { useFormAction } from "@/components/ui/use-form-action";
 import { Card } from "./ui";
 
 export function AnnouncementForm({ announcement }: { announcement?: Announcement }) {
-  const { state, onSubmit, pending } = useFormAction(saveAnnouncement, { successHref: "/admin/announcements" });
+  const { state, onSubmit, pending, formKey } = useFormAction(saveAnnouncement, { successHref: "/admin/announcements", version: announcement?.updatedAt });
   const [uploading, setUploading] = useState(false);
   const errors = state.fieldErrors ?? {};
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-6">
+    <form key={formKey} onSubmit={onSubmit} noValidate className="space-y-6">
       {announcement && <input type="hidden" name="id" value={announcement.id} />}
       {state.message && <FormMessage tone={state.ok ? "success" : "error"}>{state.message}</FormMessage>}
       <Card title="Announcement" description="Shown in a popup when visitors open the public website.">
