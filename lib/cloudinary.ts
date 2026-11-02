@@ -14,8 +14,13 @@ type CloudinaryConfig = { cloudName: string; apiKey: string; apiSecret: string }
 export const CLOUDINARY_ROOT_FOLDER = "arict";
 export type UploadFolder = "media" | "submissions";
 
+/** Tolerates common paste mistakes: surrounding quotes/spaces and a repeated "CLOUDINARY_URL=" prefix. */
+function cleanCloudinaryUrl(raw: string | undefined) {
+  return raw?.trim().replace(/^["']|["']$/g, "").replace(/^(CLOUDINARY_URL=)+/i, "").trim();
+}
+
 export function cloudinaryConfig(): CloudinaryConfig | null {
-  const url = process.env.CLOUDINARY_URL;
+  const url = cleanCloudinaryUrl(process.env.CLOUDINARY_URL);
   if (url) {
     try {
       const u = new URL(url);
