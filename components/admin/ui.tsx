@@ -70,10 +70,25 @@ export function StatusBadge({ status, label }: { status: string; label?: string 
   );
 }
 
+/**
+ * A table on tablets and up. On phones each row becomes a stacked card (the column
+ * headers are hidden and cells stack), so action buttons stay on screen instead of
+ * needing a sideways scroll.
+ */
 export function Table({ children }: { children: ReactNode }) {
   return (
     <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
-      <table className="w-full min-w-[640px] text-left text-sm [&_tbody_tr:last-child_td]:border-b-0">{children}</table>
+      <table
+        className={cn(
+          "w-full text-left text-sm md:min-w-[640px] [&_tbody_tr:last-child_td]:border-b-0",
+          "max-md:block max-md:[&_thead]:hidden max-md:[&_tbody]:block",
+          "max-md:[&_tr]:block max-md:[&_tr]:px-4 max-md:[&_tr]:py-4 max-md:[&_tbody_tr]:border-b max-md:[&_tbody_tr]:border-line max-md:[&_tbody_tr:last-child]:border-b-0",
+          "max-md:[&_td]:block max-md:[&_td]:border-0 max-md:[&_td]:p-0 max-md:[&_td]:text-left max-md:[&_td:empty]:hidden",
+          "max-md:[&_td+td]:mt-1.5 max-md:[&_td:last-child:not(:first-child)]:mt-3 max-md:[&_td_.justify-end]:justify-start",
+        )}
+      >
+        {children}
+      </table>
     </div>
   );
 }

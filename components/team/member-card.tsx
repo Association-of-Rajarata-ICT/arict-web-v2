@@ -69,7 +69,7 @@ export function MemberCard({
             src={member.image}
             alt={`Portrait of ${member.fullName}`}
             fill
-            sizes={large ? "(min-width: 380px) 298px, calc(100vw - 56px)" : compact ? "238px" : "258px"}
+            sizes={`(min-width: 640px) ${large ? 298 : compact ? 238 : 258}px, 50vw`}
             className="object-cover object-[center_20%] transition-transform duration-700 motion-safe:group-hover:scale-[1.03]"
           />
         ) : (
@@ -81,20 +81,21 @@ export function MemberCard({
 
       {/* Then the name and details */}
       <div className="px-1.5 pt-4 text-center">
-        <Heading className={cn("leading-tight font-semibold tracking-tight break-words text-balance text-ink", large ? "text-xl" : compact ? "text-base" : "text-lg")}>
+        <Heading className={cn("leading-tight font-semibold tracking-tight break-words text-balance text-ink", large ? "text-lg sm:text-xl" : compact ? "text-[15px] sm:text-base" : "text-base sm:text-lg")}>
           {member.fullName}
         </Heading>
         <p className="mt-1.5 text-xs leading-snug font-medium text-brand">{role}</p>
       </div>
       <div className="flex flex-1 flex-col px-1.5 pt-3 pb-1.5">
-        <div className="mt-auto flex flex-wrap items-center justify-between gap-2">
+        {/* Narrow two-up cards on phones: status above the links, so neighbouring cards line up. */}
+        <div className="mt-auto flex flex-col items-start gap-2 min-[420px]:flex-row min-[420px]:flex-wrap min-[420px]:items-center min-[420px]:justify-between">
           {year && (
             <div>
               <p className="text-[11px] text-muted">Current Status</p>
               <p className="mt-0.5 text-xs font-medium text-ink">{year}</p>
             </div>
           )}
-          <MemberLinks member={member} className="ml-auto" />
+          <MemberLinks member={member} className="min-[420px]:ml-auto" />
         </div>
       </div>
     </article>

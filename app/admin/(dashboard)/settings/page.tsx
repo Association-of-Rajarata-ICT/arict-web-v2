@@ -26,7 +26,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/s
   return (
     <>
       <AdminHeader title="Site settings" description="Content shown across the public website. Changes go live as soon as you save." />
-      <nav aria-label="Settings sections" className="mb-8 flex gap-1 overflow-x-auto rounded-2xl border border-line bg-surface p-1">
+      <nav aria-label="Settings sections" className="mb-8 flex flex-wrap gap-1 rounded-2xl border border-line bg-surface p-1">
         {TABS.map((t) => (
           <Link
             key={t.key}

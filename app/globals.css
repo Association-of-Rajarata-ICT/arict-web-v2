@@ -66,6 +66,13 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* A grid without a phone column count (e.g. "grid lg:grid-cols-2") gets one column that
+     can't grow past the screen, so a wide table or a long word can't widen the page.
+     Column utilities (grid-cols-*, sm:grid-cols-*) still override this. */
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   body {
     background: var(--color-paper);
     color: var(--color-ink);
@@ -193,6 +200,96 @@ html.lenis body {
   }
   .prose-arict li::marker {
     color: var(--color-brand);
+  }
+  .prose-arict ol {
+    list-style: decimal;
+    padding-left: 1.4rem;
+  }
+  .prose-arict li > ul,
+  .prose-arict li > ol {
+    margin-top: 0.35em;
+  }
+  .prose-arict h4 {
+    color: var(--color-ink);
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-top: 1.6em;
+  }
+  .prose-arict strong {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+  .prose-arict a {
+    color: var(--color-ink);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: color-mix(in srgb, var(--color-brand) 55%, transparent);
+    overflow-wrap: anywhere;
+  }
+  .prose-arict a:hover {
+    text-decoration-color: var(--color-brand);
+  }
+  .prose-arict blockquote {
+    border-left: 3px solid var(--color-brand);
+    padding-left: 1rem;
+    color: var(--color-muted);
+    font-style: italic;
+  }
+  .prose-arict hr {
+    border-color: var(--color-line);
+    margin-block: 2em;
+  }
+  .prose-arict img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 1rem;
+    border: 1px solid var(--color-line);
+  }
+  .prose-arict :not(pre) > code {
+    border-radius: 0.375rem;
+    background: var(--color-mist);
+    padding: 0.1em 0.35em;
+    font-size: 0.88em;
+    color: var(--color-ink);
+    overflow-wrap: anywhere;
+  }
+  .prose-arict pre {
+    overflow-x: auto;
+    border-radius: 1rem;
+    background: var(--color-night, #0b0b0b);
+    color: #f2f2f3;
+    padding: 1rem 1.1rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  /* Wide tables scroll inside this box on small screens instead of widening the page. */
+  .prose-arict .prose-table {
+    overflow-x: auto;
+    border: 1px solid var(--color-line);
+    border-radius: 1rem;
+  }
+  .prose-arict table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .prose-arict th,
+  .prose-arict td {
+    border-bottom: 1px solid var(--color-line);
+    padding: 0.6rem 0.9rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .prose-arict th {
+    background: var(--color-mist);
+    color: var(--color-ink);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .prose-arict tr:last-child td {
+    border-bottom: 0;
   }
 }
 

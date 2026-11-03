@@ -6,6 +6,7 @@ import { WHAT_WE_DO_ICONS, type SettingsKey, type SiteSettings } from "@/lib/set
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { MarkdownEditor } from "@/components/ui/markdown-editor";
 import { useFormAction } from "@/components/ui/use-form-action";
 import { Card } from "./ui";
 
@@ -34,6 +35,13 @@ const T = (props: { name: string; label: string; value: string; error?: string; 
       <Input name={props.name} defaultValue={props.value} maxLength={props.max} error={props.error} hasHint={!!props.hint} />
     </Field>
   );
+
+/** Long text written in Markdown (toolbar, image upload and preview). */
+const M = (props: { name: string; label: string; value: string; error?: string; rows?: number; max: number; onBusyChange: (busy: boolean) => void }) => (
+  <Field label={props.label} name={props.name} error={props.error} hint="Markdown: use the toolbar for formatting, links, tables and images.">
+    <MarkdownEditor name={props.name} defaultValue={props.value} rows={props.rows} maxLength={props.max} error={props.error} hasHint onBusyChange={props.onBusyChange} />
+  </Field>
+);
 
 export function SettingsForms({ tab, settings }: { tab: SettingsKey | "homepage" | "contactSocial"; settings: SiteSettings }) {
   const [busy, setBusy] = useState(false);
@@ -149,7 +157,7 @@ export function SettingsForms({ tab, settings }: { tab: SettingsKey | "homepage"
                 {Array.from({ length: 6 }, (_, i) => {
                   const st = s.stats.items[i];
                   return (
-                    <div key={i} className="grid grid-cols-[1fr_110px_80px] gap-3">
+                    <div key={i} className="grid grid-cols-[minmax(0,1fr)_4.5rem_3.5rem] gap-2 sm:grid-cols-[minmax(0,1fr)_110px_80px] sm:gap-3">
                       <Input name={`stat_label_${i}`} defaultValue={st?.label ?? ""} placeholder="Label, e.g. Events" aria-label={`Statistic ${i + 1} label`} />
                       <Input name={`stat_value_${i}`} type="number" min={0} defaultValue={st?.value ?? ""} placeholder="20" aria-label={`Statistic ${i + 1} value`} />
                       <Input name={`stat_suffix_${i}`} defaultValue={st?.suffix ?? ""} placeholder="+" maxLength={4} aria-label={`Statistic ${i + 1} suffix`} />
@@ -241,13 +249,13 @@ export function SettingsForms({ tab, settings }: { tab: SettingsKey | "homepage"
 
   if (tab === "about")
     return (
-      <SectionForm section="about">
+      <SectionForm section="about" busy={busy}>
         {(e) => (
-          <Card title="About page" description="Blank line = new paragraph in long text fields.">
+          <Card title="About page" description="Our story, History, the university relationship and Future direction support Markdown.">
             <div className="space-y-5">
               <T name="intro" label="Introduction" value={s.about.intro} error={e.intro} rows={3} required />
-              <T name="story" label="Our story" value={s.about.story} error={e.story} rows={6} />
-              <T name="history" label="History" value={s.about.history} error={e.history} rows={5} />
+              <M name="story" label="Our story" value={s.about.story} error={e.story} rows={8} max={3000} onBusyChange={setBusy} />
+              <M name="history" label="History" value={s.about.history} error={e.history} rows={6} max={3000} onBusyChange={setBusy} />
               <div className="grid gap-5 sm:grid-cols-2">
                 <T name="mission" label="Mission" value={s.about.mission} error={e.mission} rows={3} />
                 <T name="vision" label="Vision" value={s.about.vision} error={e.vision} rows={3} />
@@ -255,8 +263,8 @@ export function SettingsForms({ tab, settings }: { tab: SettingsKey | "homepage"
               <T name="objectives" label="Objectives (one per line)" value={s.about.objectives.join("\n")} error={e.objectives} rows={5} />
               <T name="values" label="Values (one per line: Title - description)" value={s.about.values.map((v) => (v.description ? `${v.title} - ${v.description}` : v.title)).join("\n")} error={e.values} rows={4} />
               <T name="achievements" label="Achievements (one per line)" value={s.about.achievements.join("\n")} error={e.achievements} rows={4} />
-              <T name="universityRelationship" label="Relationship with the university" value={s.about.universityRelationship} error={e.universityRelationship} rows={4} />
-              <T name="futureDirection" label="Future direction" value={s.about.futureDirection} error={e.futureDirection} rows={4} />
+              <M name="universityRelationship" label="Relationship with the university" value={s.about.universityRelationship} error={e.universityRelationship} rows={5} max={1500} onBusyChange={setBusy} />
+              <M name="futureDirection" label="Future direction" value={s.about.futureDirection} error={e.futureDirection} rows={5} max={1500} onBusyChange={setBusy} />
             </div>
           </Card>
         )}

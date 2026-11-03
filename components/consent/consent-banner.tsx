@@ -35,15 +35,15 @@ export function ConsentBanner() {
           // Wait a moment on first load so the banner doesn't compete with the hero; close immediately.
           animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE, delay: reopened ? 0 : 1.2 } }}
           exit={{ opacity: 0, y: 16, transition: { duration: 0.2, ease: EASE } }}
-          className="fixed inset-x-3 bottom-3 z-[65] mx-auto max-w-md rounded-3xl border border-line bg-surface/95 p-5 text-ink shadow-float backdrop-blur-xl sm:inset-x-auto sm:right-5 sm:bottom-5 sm:left-5 sm:mx-0 sm:p-6"
+          className="fixed inset-x-3 bottom-3 z-[65] mx-auto max-w-md rounded-3xl border border-line bg-surface/95 p-4 text-ink shadow-float backdrop-blur-xl sm:inset-x-auto sm:right-5 sm:bottom-5 sm:left-5 sm:mx-0 sm:p-6"
         >
           <div className="flex items-start gap-3">
-            <span aria-hidden className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-mist text-ink/80">
+            <span aria-hidden className="hidden size-9 shrink-0 items-center justify-center rounded-full bg-mist text-ink/80 sm:inline-flex">
               <Cookie className="size-[18px]" />
             </span>
             <div className="min-w-0 flex-1">
               <h2 className="text-[15px] font-semibold">Your privacy choices</h2>
-              <p className="mt-1.5 text-sm leading-relaxed text-body">
+              <p className="mt-1 text-[13px] leading-snug text-body sm:mt-1.5 sm:text-sm sm:leading-relaxed">
                 We&apos;d like to use privacy-friendly analytics to see which pages are useful, and show Google Maps on the
                 Contact page (Google may set its own cookies). Essential storage, like your theme choice, is always on.{" "}
                 <Link href="/privacy" className="font-medium text-ink underline underline-offset-2">
@@ -67,18 +67,18 @@ export function ConsentBanner() {
               Current choice: <span className="font-medium text-ink">{consent === "accepted" ? "Accepted" : "Declined"}</span>
             </p>
           )}
-          <div className="mt-4 grid grid-cols-2 gap-2">
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-4">
             <button
               type="button"
               onClick={() => choose("declined")}
-              className="inline-flex h-10 items-center justify-center rounded-full border border-line bg-surface text-sm font-medium text-ink transition-colors hover:bg-mist"
+              className="inline-flex h-9 items-center justify-center rounded-full sm:h-10 border border-line bg-surface text-sm font-medium text-ink transition-colors hover:bg-mist"
             >
               Decline
             </button>
             <button
               type="button"
               onClick={() => choose("accepted")}
-              className="inline-flex h-10 items-center justify-center rounded-full bg-ink text-sm font-medium text-paper transition-colors hover:bg-ink-soft"
+              className="inline-flex h-9 items-center justify-center rounded-full sm:h-10 bg-ink text-sm font-medium text-paper transition-colors hover:bg-ink-soft"
             >
               Accept
             </button>

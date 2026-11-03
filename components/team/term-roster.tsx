@@ -20,7 +20,7 @@ export function TermRoster({ members, current }: { members: PublicMember[]; curr
               {prefix}Leadership
             </h2>
           </FadeUp>
-          <StaggerContainer className="mt-10 grid gap-6 sm:grid-cols-2 lg:max-w-3xl">
+          <StaggerContainer className="mt-10 grid grid-cols-2 gap-3 sm:gap-6 lg:max-w-3xl">
             {leaders.map((m) => (
               <StaggerItem key={m.id}>
                 <MemberCard member={m} variant="large" />
@@ -38,7 +38,7 @@ export function TermRoster({ members, current }: { members: PublicMember[]; curr
               {prefix}Executive Committee
             </h2>
           </FadeUp>
-          <StaggerContainer className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <StaggerContainer className="mt-10 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
             {otherExec.map((m) => (
               <StaggerItem key={m.id}>
                 <MemberCard member={m} />
@@ -66,7 +66,7 @@ export function TermRoster({ members, current }: { members: PublicMember[]; curr
                 {list.length} / {COMMITTEE_LIMIT_PER_YEAR}
               </span>
             </FadeUp>
-            <StaggerContainer className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <StaggerContainer className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
               {list.map((m) => (
                 <StaggerItem key={m.id}>
                   <MemberCard member={m} variant="compact" />

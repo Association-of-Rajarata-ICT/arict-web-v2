@@ -7,6 +7,7 @@ import { PROJECT_CATEGORIES } from "@/lib/validations/public";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { MarkdownEditor } from "@/components/ui/markdown-editor";
 import { SelectWithOther } from "@/components/ui/select-with-other";
 import { useFormAction } from "@/components/ui/use-form-action";
 import { Card } from "./ui";
@@ -66,8 +67,8 @@ export function ProjectForm({
           <Field label="Excerpt" name="excerpt" required error={e.excerpt} hint="Shown on project cards (10–300 characters).">
             <Textarea name="excerpt" defaultValue={project?.excerpt} rows={2} maxLength={300} required error={e.excerpt} hasHint />
           </Field>
-          <Field label="Full description" name="content" error={e.content} hint="Blank line = new paragraph. “## ” for headings, “- ” for bullet points.">
-            <Textarea name="content" defaultValue={project?.content} rows={12} error={e.content} hasHint />
+          <Field label="Full description" name="content" error={e.content} hint="Markdown: use the toolbar for headings, bold, lists, links, tables and images, then check Preview.">
+            <MarkdownEditor name="content" defaultValue={project?.content} rows={14} maxLength={20000} error={e.content} hasHint onBusyChange={onBusy} />
           </Field>
           <div className="grid gap-5 sm:grid-cols-3">
             <SelectWithOther name="category" label="Category" options={PROJECT_CATEGORIES}

@@ -1,63 +1,52 @@
-import type { ReactNode } from "react";
+import Markdown, { type Components } from "react-markdown";
+import remarkBreaks from "remark-breaks";
+import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
 
+/** Images in Markdown must be https (or a path on this site); anything else is dropped. */
+const safeImageSrc = (src: unknown) =>
+  typeof src === "string" && (/^https:\/\//i.test(src) || (src.startsWith("/") && !src.startsWith("//"))) ? src : null;
+
+const components: Components = {
+  // The page already has its own h1; a "# Heading" in the content becomes a section heading.
+  h1: "h2",
+  h5: "h4",
+  h6: "h4",
+  // `node` (react-markdown's syntax tree) must not be passed on to the DOM element.
+  a: ({ node, href, ...props }) => {
+    void node;
+    const external = typeof href === "string" && /^https?:\/\//i.test(href);
+    return <a href={href} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})} {...props} />;
+  },
+  img: ({ src, alt }) => {
+    const safe = safeImageSrc(src);
+    if (!safe) return null;
+    // Plain <img>: Markdown images have no known size and may come from any https host.
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={safe} alt={alt ?? ""} loading="lazy" decoding="async" />;
+  },
+  // Wide tables scroll inside their own box on phones instead of widening the page.
+  table: ({ node, ...props }) => {
+    void node;
+    return (
+      <div className="prose-table">
+        <table {...props} />
+      </div>
+    );
+  },
+};
+
 /**
- * Renders admin/user-authored plain text safely (no HTML is ever injected).
- * Supports a small Markdown-like subset: blank-line paragraphs, "## " / "### "
- * headings, "- " bullet lists and **bold**.
+ * Renders admin/user-written Markdown safely: raw HTML is never rendered and unsafe
+ * links are removed. Supports headings, bold/italic, lists, links, images, tables
+ * (GitHub style), quotes and code. A single line break starts a new line.
  */
 export function RichText({ text, className }: { text: string; className?: string }) {
-  const blocks = text.replace(/\r\n/g, "\n").trim().split(/\n{2,}/);
   return (
     <div className={cn("prose-arict", className)}>
-      {blocks.map((block, i) => {
-        const lines = block.split("\n");
-        if (lines.every((l) => /^\s*[-*]\s+/.test(l))) {
-          return (
-            <ul key={i}>
-              {lines.map((l, j) => (
-                <li key={j}>{inline(l.replace(/^\s*[-*]\s+/, ""))}</li>
-              ))}
-            </ul>
-          );
-        }
-        if (lines[0]!.startsWith("### ")) return <Heading key={i} level={3} lines={lines} />;
-        if (lines[0]!.startsWith("## ")) return <Heading key={i} level={2} lines={lines} />;
-        return (
-          <p key={i}>
-            {lines.map((l, j) => (
-              <span key={j}>
-                {j > 0 && <br />}
-                {inline(l)}
-              </span>
-            ))}
-          </p>
-        );
-      })}
+      <Markdown remarkPlugins={[remarkGfm, remarkBreaks]} components={components}>
+        {text}
+      </Markdown>
     </div>
-  );
-}
-
-function Heading({ level, lines }: { level: 2 | 3; lines: string[] }) {
-  const [first, ...rest] = lines;
-  const Tag = level === 2 ? "h2" : "h3";
-  return (
-    <>
-      <Tag>{first!.replace(/^#{2,3}\s+/, "")}</Tag>
-      {rest.length > 0 && <RichText text={rest.join("\n")} className="contents" />}
-    </>
-  );
-}
-
-function inline(text: string): ReactNode {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
-  return parts.map((part, i) =>
-    part.startsWith("**") && part.endsWith("**") ? (
-      <strong key={i} className="font-semibold text-ink">
-        {part.slice(2, -2)}
-      </strong>
-    ) : (
-      part
-    ),
   );
 }

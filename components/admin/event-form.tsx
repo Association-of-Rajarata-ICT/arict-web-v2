@@ -7,6 +7,7 @@ import { EVENT_CATEGORIES } from "@/lib/validations/public";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/form";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { MarkdownEditor } from "@/components/ui/markdown-editor";
 import { SelectWithOther } from "@/components/ui/select-with-other";
 import { useFormAction } from "@/components/ui/use-form-action";
 import { Card } from "./ui";
@@ -41,9 +42,9 @@ export function EventForm({ event, categories }: { event?: Event & { images: Eve
             label="Full description"
             name="content"
             error={e.content}
-            hint="Blank line = new paragraph. Start lines with “## ” for headings and “- ” for bullet points."
+            hint="Markdown: use the toolbar for headings, bold, lists, links, tables and images, then check Preview."
           >
-            <Textarea name="content" defaultValue={event?.content} rows={12} error={e.content} hasHint />
+            <MarkdownEditor name="content" defaultValue={event?.content} rows={14} maxLength={20000} error={e.content} hasHint onBusyChange={onBusy} />
           </Field>
           <div className="grid gap-5 sm:grid-cols-2">
             <SelectWithOther name="category" label="Category" options={allCategories}
