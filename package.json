@@ -23,6 +23,7 @@
   "dependencies": {
     "@emailjs/browser": "^5.0.3",
     "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.1.0",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.4",
